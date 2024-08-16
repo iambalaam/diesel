@@ -1,8 +1,8 @@
 const UPDATE_HZ = 60;
 const UPDATE_MS = 1000 / UPDATE_HZ;
 
-type MS = number;
-interface Time {
+export type MS = number;
+export interface Time {
     deltaTime: MS;
     time: MS;
 }
