@@ -3,10 +3,9 @@ import { AnimationStates, Animator } from "../engine/Animator.ts";
 import { Engine } from "../engine/Engine.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
 import { PlayerController } from "./PlayerController.ts";
-import { Toggle } from "./Toggle.ts";
 
-export const CANVAS_WIDTH = 800;
-export const CANVAS_HEIGHT = 600;
+export const CANVAS_WIDTH = self.innerWidth;
+export const CANVAS_HEIGHT = self.innerHeight;
 const canvas = document.getElementsByTagName("canvas")[0];
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
@@ -28,11 +27,6 @@ ctx.imageSmoothingEnabled = false;
         rows: true,
     });
 
-    const forwards = new Array(spriteSheet.sprites - 1).fill(0).map((
-        _,
-        i,
-    ) => i);
-    const reverse = [...forwards].reverse();
     const animStates: AnimationStates = {
         cycles: {
             idle: {
