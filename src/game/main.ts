@@ -2,6 +2,7 @@ import { Actor } from "../engine/Actor.ts";
 import { AnimationStates, Animator } from "../engine/Animator.ts";
 import { Engine } from "../engine/Engine.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
+import { PlayerController } from "./PlayerController.ts";
 import { Toggle } from "./Toggle.ts";
 
 export const CANVAS_WIDTH = 800;
@@ -37,12 +38,47 @@ ctx.imageSmoothingEnabled = false;
             idle: {
                 spriteSheet,
                 looping: true,
-                indexes: forwards,
+                indexes: [45],
             },
-            reverse: {
+            N: {
                 spriteSheet,
                 looping: true,
-                indexes: reverse,
+                indexes: [45],
+            },
+            NE: {
+                spriteSheet,
+                looping: true,
+                indexes: [60],
+            },
+            E: {
+                spriteSheet,
+                looping: true,
+                indexes: [75],
+            },
+            SE: {
+                spriteSheet,
+                looping: true,
+                indexes: [90],
+            },
+            S: {
+                spriteSheet,
+                looping: true,
+                indexes: [105],
+            },
+            SW: {
+                spriteSheet,
+                looping: true,
+                indexes: [120],
+            },
+            W: {
+                spriteSheet,
+                looping: true,
+                indexes: [15],
+            },
+            NW: {
+                spriteSheet,
+                looping: true,
+                indexes: [30],
             },
         },
     };
@@ -52,15 +88,12 @@ ctx.imageSmoothingEnabled = false;
         onInit: (e, time) => {
             robot = e.createActor("robot");
             robot.animator = new Animator(e, time, animStates);
-            robot.behaviours.push(new Toggle());
+            robot.behaviours.push(new PlayerController());
         },
         onEarlyRender: (e) => {
             // Background
             e.ctx.fillStyle = "grey";
             e.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-        },
-        onRender: (e, time) => {
-            //
         },
     });
 })();

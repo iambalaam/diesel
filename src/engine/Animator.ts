@@ -1,6 +1,7 @@
 import { SPRITE_MS, Spritesheet } from "./Spritesheet.ts";
 import { Component } from "./Component.ts";
 import { Engine, MS, Time } from "./Engine.ts";
+import { Actor } from "./Actor.ts";
 
 export type AnimationCycle = {
     spriteSheet: Spritesheet;
@@ -32,7 +33,6 @@ export class Animator extends Component {
     }
 
     start(name: string, time: Time) {
-        console.debug("Starting cycle:", name);
         const cycle = this.#states.cycles[name];
         if (!cycle) throw new Error(`No cycle: ${name}`);
         this.#currentCycle = cycle;
@@ -40,7 +40,7 @@ export class Animator extends Component {
         this.#currentCycleStart = time.time - (time.time % SPRITE_MS);
     }
 
-    render(time: Time) {
+    render(actor: Actor, time: Time) {
         let cycle = this.#currentCycle;
         const frameNumber = Math.floor(
             (time.time - this.#currentCycleStart) /
@@ -70,8 +70,8 @@ export class Animator extends Component {
         cycle.spriteSheet.draw(
             this.#ctx,
             index,
-            0,
-            0,
+            actor.position.x,
+            actor.position.y,
             2,
         );
         return;

@@ -8,6 +8,7 @@ export class Toggle extends Behaviour {
 
     render(actor: Actor, time: Time): void {
         if (time.time - this.lastToggled > 3_000) {
+            console.debug("TOGGLE");
             this.lastToggled = time.time;
             actor.animator?.start(this.nextCycle, time);
             this.nextCycle = this.nextCycle === "idle" ? "reverse" : "idle";

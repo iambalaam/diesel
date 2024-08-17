@@ -17,7 +17,7 @@ export class Actor {
         for (const behaviour of this.behaviours) {
             behaviour.render(this, time);
         }
-        this.animator?.render(time);
+        this.animator?.render(this, time);
     }
 
     update(time: Time) {
