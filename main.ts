@@ -27,14 +27,25 @@ ctx.imageSmoothingEnabled = false;
     });
 
     const robot = new Actor();
+    const forwards = new Array(spriteSheet.sprites - 1).fill(0).map((
+        _,
+        i,
+    ) => i);
+    const reverse = [...forwards].reverse();
     const animStates: AnimationStates = {
         cycles: {
             idle: {
                 spriteSheet,
                 looping: true,
-                indexes: new Array(spriteSheet.sprites).fill(0).map((_, i) =>
-                    i
-                ),
+                indexes: forwards,
+                end: "reverse",
+            },
+            reverse: {
+                spriteSheet,
+                looping: true,
+                indexes: reverse,
+
+                end: "idle",
             },
         },
     };

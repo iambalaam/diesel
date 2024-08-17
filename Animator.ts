@@ -6,6 +6,7 @@ export type AnimationCycle = {
     spriteSheet: Spritesheet;
     indexes: number[];
     looping: boolean;
+    end?: string;
 };
 
 export type AnimationStates = {
@@ -16,6 +17,8 @@ export class Animator extends Component {
     #ctx: CanvasRenderingContext2D;
     #currentCycle: AnimationCycle;
     #currentCycleStart: MS;
+    #states: AnimationStates;
+
     constructor(
         ctx: CanvasRenderingContext2D,
         time: Time,
@@ -25,27 +28,45 @@ export class Animator extends Component {
         this.#ctx = ctx;
         this.#currentCycle = states.cycles.idle;
         this.#currentCycleStart = time.time;
+        this.#states = states;
+    }
+
+    start(name: string, time: Time) {
+        console.debug("Starting cycle:", name);
+        const cycle = this.#states.cycles[name];
+        if (!cycle) throw new Error(`No cycle: ${name}`);
+        this.#currentCycle = cycle;
+        // This keeps all animations in phase
+        this.#currentCycleStart = time.time - (time.time % SPRITE_MS);
     }
 
     update(time: Time) {
-        const cycle = this.#currentCycle;
+        let cycle = this.#currentCycle;
         const frameNumber = Math.floor(
             (time.time - this.#currentCycleStart) /
                 SPRITE_MS,
         );
 
-        let index: number;
+        let cycleIndex: number;
         if (!this.enabled) {
             // Stuck at start
-            index = 0;
-        } else if (frameNumber > cycle.indexes.length && !cycle.looping) {
+            cycleIndex = 0;
+        } else if (frameNumber < cycle.indexes.length) {
+            cycleIndex = frameNumber;
+        } else if (cycle.end) {
+            // Go to next cycle
+            this.start(cycle.end, time);
+            cycleIndex = 0;
+            cycle = this.#currentCycle;
+        } else if (!cycle.looping) {
             // Stuck at end
-            index = cycle.indexes.length - 1;
+            cycleIndex = cycle.indexes.length - 1;
         } else {
             // Cycling
-            index = frameNumber % cycle.indexes.length;
+            cycleIndex = frameNumber % cycle.indexes.length;
         }
 
+        const index = this.#currentCycle.indexes[cycleIndex];
         cycle.spriteSheet.draw(
             this.#ctx,
             index,
