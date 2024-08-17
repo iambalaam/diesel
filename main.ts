@@ -1,5 +1,7 @@
+import { Actor } from "./Actor.ts";
+import { AnimationStates, Animator } from "./Animator.ts";
 import { Engine } from "./engine.ts";
-import { Sprite } from "./Sprite.ts";
+import { Spritesheet } from "./Spritesheet.ts";
 
 const CANVAS_WIDTH = 800;
 const CANVAS_HEIGHT = 600;
@@ -7,34 +9,43 @@ const canvas = document.getElementsByTagName("canvas")[0];
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
 const ctx = canvas.getContext("2d")!;
-
-const RADIUS = 100;
-const SPEED = 0.001;
+ctx.imageSmoothingEnabled = false;
 
 (async () => {
     const img = new Image();
     const imgPromise = new Promise((resolve) => {
-        img.src = "earth.png";
+        img.src = "robot0.4.png";
         img.onload = resolve;
     });
 
     await imgPromise;
 
-    const sprite = new Sprite(img, {
-        fps: 60,
-        spriteWidth: 64,
-        spriteHeight: 64,
+    const spriteSheet = new Spritesheet(img, {
+        spriteWidth: 128,
+        spriteHeight: 128,
+        rows: true,
     });
 
+    const robot = new Actor();
+    const animStates: AnimationStates = {
+        cycles: {
+            idle: {
+                spriteSheet,
+                looping: true,
+                indexes: new Array(spriteSheet.sprites).fill(0).map((_, i) =>
+                    i
+                ),
+            },
+        },
+    };
+
     new Engine(ctx, (ctx, time) => {
-        ctx.fillStyle = "black";
+        if (robot.animator === undefined) {
+            robot.animator = new Animator(ctx, time, animStates);
+        }
+        ctx.fillStyle = "grey";
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        const x = (CANVAS_WIDTH - RADIUS) / 2 +
-            Math.sin(time.time * SPEED) * RADIUS;
-        const y = (CANVAS_HEIGHT - RADIUS) / 2 +
-            Math.cos(time.time * SPEED) * RADIUS;
-
-        sprite.draw(ctx, time, x, y);
+        robot.animator.update(time);
     });
 })();
