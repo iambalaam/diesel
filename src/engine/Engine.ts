@@ -1,5 +1,4 @@
 import { Actor } from "./Actor.ts";
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./main.ts";
 
 const UPDATE_HZ = 60;
 const UPDATE_MS = 1000 / UPDATE_HZ;
@@ -10,10 +9,21 @@ export interface Time {
     time: MS;
 }
 
+export interface Hooks {
+    onInit: (engine: Engine, time: Time) => void;
+    onEarlyRender: (engine: Engine, time: Time) => void;
+    onRender: (engine: Engine, time: Time) => void;
+    onUpdate: (engine: Engine, time: Time) => void;
+}
+
 export class Engine {
     ctx: CanvasRenderingContext2D;
-    #onRender: (engine: Engine, time: Time) => void;
-    #onUpdate: (engine: Engine, time: Time) => void;
+    #hooks: Hooks = {
+        onInit: (_engine: Engine) => {},
+        onEarlyRender: (_engine: Engine, _time: Time) => {},
+        onRender: (_engine: Engine, _time: Time) => {},
+        onUpdate: (_engine: Engine, _time: Time) => {},
+    };
 
     #quit = false;
     #rAFId = 0;
@@ -24,13 +34,13 @@ export class Engine {
 
     constructor(
         ctx: CanvasRenderingContext2D,
-        onRender = (_engine: Engine, _time: Time) => {},
-        onUpdate = (_engine: Engine, _time: Time) => {},
+        hooks: Partial<Hooks>,
     ) {
         this.ctx = ctx;
-        this.#onRender = onRender;
-        this.#onUpdate = onUpdate;
+        this.#hooks = { ...this.#hooks, ...hooks };
 
+        const initTime: Time = { time: 0, deltaTime: 0 };
+        this.#hooks.onInit(this, initTime);
         this.#rAF(0);
     }
 
@@ -77,7 +87,7 @@ export class Engine {
                 this.#prevUpdateMS += UPDATE_MS;
                 updateCount++;
                 const updateTime = { time: ms, deltaTime: UPDATE_HZ };
-                this.#onUpdate(this, updateTime);
+                this.#hooks.onUpdate(this, updateTime);
                 this.#actorUpdate(this, updateTime);
 
                 // Avoid infinite loop
@@ -96,12 +106,9 @@ export class Engine {
             const timeDelta = ms - this.#prevRAFMS;
             this.#prevRAFMS = ms;
 
-            // Background
-            this.ctx.fillStyle = "grey";
-            this.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
             const renderTime = { time: ms, deltaTime: timeDelta };
-            this.#onRender(this, renderTime);
+            this.#hooks.onEarlyRender(this, renderTime);
+            this.#hooks.onRender(this, renderTime);
             this.#actorRender(this, renderTime);
         } catch (e) {
             console.error(e);

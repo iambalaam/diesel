@@ -1,6 +1,6 @@
 import { SPRITE_MS, Spritesheet } from "./Spritesheet.ts";
 import { Component } from "./Component.ts";
-import { Engine, MS, Time } from "./engine.ts";
+import { Engine, MS, Time } from "./Engine.ts";
 
 export type AnimationCycle = {
     spriteSheet: Spritesheet;

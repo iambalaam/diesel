@@ -1,6 +1,6 @@
 import { Animator } from "./Animator.ts";
 import { Behaviour } from "./Behaviour.ts";
-import { Time } from "./engine.ts";
+import { Time } from "./Engine.ts";
 import { Position } from "./Position.ts";
 
 export class Actor {

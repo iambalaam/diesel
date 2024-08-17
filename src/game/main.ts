@@ -1,7 +1,7 @@
-import { Actor } from "./Actor.ts";
-import { AnimationStates, Animator } from "./Animator.ts";
-import { Engine } from "./engine.ts";
-import { Spritesheet } from "./Spritesheet.ts";
+import { Actor } from "../engine/Actor.ts";
+import { AnimationStates, Animator } from "../engine/Animator.ts";
+import { Engine } from "../engine/Engine.ts";
+import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Toggle } from "./Toggle.ts";
 
 export const CANVAS_WIDTH = 800;
@@ -48,11 +48,19 @@ ctx.imageSmoothingEnabled = false;
     };
 
     let robot: Actor;
-    new Engine(ctx, (e, time) => {
-        if (robot === undefined) {
+    new Engine(ctx, {
+        onInit: (e, time) => {
             robot = e.createActor("robot");
             robot.animator = new Animator(e, time, animStates);
             robot.behaviours.push(new Toggle());
-        }
+        },
+        onEarlyRender: (e) => {
+            // Background
+            e.ctx.fillStyle = "grey";
+            e.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+        },
+        onRender: (e, time) => {
+            //
+        },
     });
 })();
