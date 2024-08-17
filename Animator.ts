@@ -1,6 +1,6 @@
 import { SPRITE_MS, Spritesheet } from "./Spritesheet.ts";
 import { Component } from "./Component.ts";
-import { MS, Time } from "./engine.ts";
+import { Engine, MS, Time } from "./engine.ts";
 
 export type AnimationCycle = {
     spriteSheet: Spritesheet;
@@ -20,12 +20,12 @@ export class Animator extends Component {
     #states: AnimationStates;
 
     constructor(
-        ctx: CanvasRenderingContext2D,
+        engine: Engine,
         time: Time,
         states: AnimationStates,
     ) {
         super();
-        this.#ctx = ctx;
+        this.#ctx = engine.ctx;
         this.#currentCycle = states.cycles.idle;
         this.#currentCycleStart = time.time;
         this.#states = states;
@@ -40,7 +40,7 @@ export class Animator extends Component {
         this.#currentCycleStart = time.time - (time.time % SPRITE_MS);
     }
 
-    update(time: Time) {
+    render(time: Time) {
         let cycle = this.#currentCycle;
         const frameNumber = Math.floor(
             (time.time - this.#currentCycleStart) /
@@ -72,7 +72,7 @@ export class Animator extends Component {
             index,
             0,
             0,
-            4,
+            2,
         );
         return;
     }

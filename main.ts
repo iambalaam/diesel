@@ -2,9 +2,10 @@ import { Actor } from "./Actor.ts";
 import { AnimationStates, Animator } from "./Animator.ts";
 import { Engine } from "./engine.ts";
 import { Spritesheet } from "./Spritesheet.ts";
+import { Toggle } from "./Toggle.ts";
 
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 600;
+export const CANVAS_WIDTH = 800;
+export const CANVAS_HEIGHT = 600;
 const canvas = document.getElementsByTagName("canvas")[0];
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
@@ -26,7 +27,6 @@ ctx.imageSmoothingEnabled = false;
         rows: true,
     });
 
-    const robot = new Actor();
     const forwards = new Array(spriteSheet.sprites - 1).fill(0).map((
         _,
         i,
@@ -38,25 +38,21 @@ ctx.imageSmoothingEnabled = false;
                 spriteSheet,
                 looping: true,
                 indexes: forwards,
-                end: "reverse",
             },
             reverse: {
                 spriteSheet,
                 looping: true,
                 indexes: reverse,
-
-                end: "idle",
             },
         },
     };
 
-    new Engine(ctx, (ctx, time) => {
-        if (robot.animator === undefined) {
-            robot.animator = new Animator(ctx, time, animStates);
+    let robot: Actor;
+    new Engine(ctx, (e, time) => {
+        if (robot === undefined) {
+            robot = e.createActor("robot");
+            robot.animator = new Animator(e, time, animStates);
+            robot.behaviours.push(new Toggle());
         }
-        ctx.fillStyle = "grey";
-        ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-
-        robot.animator.update(time);
     });
 })();
