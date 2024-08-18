@@ -1,4 +1,5 @@
 import { Actor } from "./Actor.ts";
+import { Input, pollCurrentGamepad } from "./Input.ts";
 
 const UPDATE_HZ = 60;
 const UPDATE_MS = 1000 / UPDATE_HZ;
@@ -87,6 +88,7 @@ export class Engine {
                 this.#prevUpdateMS += UPDATE_MS;
                 updateCount++;
                 const updateTime = { time: ms, deltaTime: UPDATE_HZ };
+                pollCurrentGamepad();
                 this.#hooks.onUpdate(this, updateTime);
                 this.#actorUpdate(this, updateTime);
 

@@ -13,66 +13,56 @@ const ctx = canvas.getContext("2d")!;
 ctx.imageSmoothingEnabled = false;
 
 (async () => {
-    const img = new Image();
-    const imgPromise = new Promise((resolve) => {
-        img.src = "robot0.4.png";
-        img.onload = resolve;
+    const idleImg = new Image();
+    const jumpImg = new Image();
+    const idlePromise = new Promise((resolve) => {
+        idleImg.src = "robot-idle0.1.png";
+        idleImg.onload = resolve;
+    });
+    const jumpPromise = new Promise((resolve) => {
+        jumpImg.src = "robot-jump0.1.png";
+        jumpImg.onload = resolve;
     });
 
-    await imgPromise;
+    await idlePromise;
+    await jumpPromise;
 
-    const spriteSheet = new Spritesheet(img, {
+    const idleSheet = new Spritesheet(idleImg, {
+        spriteWidth: 128,
+        spriteHeight: 128,
+        rows: true,
+    });
+    const jumpSheet = new Spritesheet(jumpImg, {
         spriteWidth: 128,
         spriteHeight: 128,
         rows: true,
     });
 
+    const idleIndexes = new Array(idleSheet.sprites - 1).fill(0).map((_, i) =>
+        i
+    );
+    const jumpUpIndexes = new Array(jumpSheet.sprites - 1).fill(0).map((_, i) =>
+        i
+    );
+    const jupmDownIndexes = [...jumpUpIndexes].reverse();
     const animStates: AnimationStates = {
         cycles: {
             idle: {
-                spriteSheet,
+                spriteSheet: idleSheet,
                 looping: true,
-                indexes: [45],
+                indexes: idleIndexes,
             },
-            N: {
-                spriteSheet,
-                looping: true,
-                indexes: [45],
+            "jump-up": {
+                spriteSheet: jumpSheet,
+                looping: false,
+                indexes: jumpUpIndexes,
+                end: "jump-down",
             },
-            NE: {
-                spriteSheet,
-                looping: true,
-                indexes: [60],
-            },
-            E: {
-                spriteSheet,
-                looping: true,
-                indexes: [75],
-            },
-            SE: {
-                spriteSheet,
-                looping: true,
-                indexes: [90],
-            },
-            S: {
-                spriteSheet,
-                looping: true,
-                indexes: [105],
-            },
-            SW: {
-                spriteSheet,
-                looping: true,
-                indexes: [120],
-            },
-            W: {
-                spriteSheet,
-                looping: true,
-                indexes: [15],
-            },
-            NW: {
-                spriteSheet,
-                looping: true,
-                indexes: [30],
+            "jump-down": {
+                spriteSheet: jumpSheet,
+                looping: false,
+                indexes: jupmDownIndexes,
+                end: "idle",
             },
         },
     };
