@@ -1,5 +1,7 @@
 import { DEBUG } from "./Engine.ts";
+import { worldToScreen } from "./Transform.ts";
 import { Vec2 } from "./Vec2.ts";
+import { Vec3 } from "./Vec3.ts";
 
 export const SPRITE_FPS = 30;
 export const SPRITE_MS = 1000 / SPRITE_FPS;
@@ -63,18 +65,18 @@ export class Spritesheet {
     draw(
         ctx: CanvasRenderingContext2D,
         index: number,
-        dx: number,
-        dy: number,
+        world: Vec3,
         scale = 1,
     ) {
+        const screen = worldToScreen(world);
         const sprite = this.#sprites[index]!;
         if (!sprite) return;
         const { size, position } = sprite;
         const width = size.x * scale;
         const height = size.y * scale;
         const topLeft = new Vec2(
-            dx - this.#cfg.spriteAnchor.x * scale,
-            dy - this.#cfg.spriteAnchor.y * scale,
+            screen.x - this.#cfg.spriteAnchor.x * scale,
+            screen.y - this.#cfg.spriteAnchor.y * scale,
         );
 
         ctx.drawImage(
@@ -100,8 +102,8 @@ export class Spritesheet {
             );
             ctx.beginPath();
             ctx.arc(
-                dx,
-                dy,
+                screen.x,
+                screen.y,
                 5,
                 0,
                 Math.PI * 2,

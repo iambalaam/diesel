@@ -1,0 +1,27 @@
+export class Vec3 {
+    constructor(public x: number, public y: number, public z: number) {}
+
+    equals(vec3: Vec3) {
+        return this.x === vec3.x && this.y === vec3.y && this.z === vec3.z;
+    }
+
+    add(vec3: Vec3) {
+        return new Vec3(this.x + vec3.x, this.y + vec3.y, this.z + vec3.z);
+    }
+
+    subtract(vec3: Vec3) {
+        return new Vec3(this.x - vec3.x, this.y - vec3.y, this.z - vec3.z);
+    }
+
+    sqrMag() {
+        return Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2);
+    }
+
+    mag() {
+        return Math.sqrt(this.sqrMag());
+    }
+
+    scale(s: number) {
+        return new Vec3(this.x * s, this.y * s, this.z * s);
+    }
+}

@@ -1,15 +1,15 @@
 import { Animator } from "./Animator.ts";
 import { Behaviour } from "./Behaviour.ts";
 import { Time } from "./Engine.ts";
-import { Vec2 } from "./Vec2.ts";
+import { Vec3 } from "./Vec3.ts";
 
 export class Actor {
-    position: Vec2;
+    position: Vec3;
     animator?: Animator;
     behaviours: Behaviour[];
 
     constructor(public name: string) {
-        this.position = new Vec2(0, 0);
+        this.position = new Vec3(0, 0, 0);
         this.behaviours = [];
     }
 

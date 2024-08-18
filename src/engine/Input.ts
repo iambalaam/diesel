@@ -14,18 +14,6 @@ self.addEventListener("keyup", (e) => {
     }
 });
 
-// let currentGamepad = getCurrentGamepad();
-// function getCurrentGamepad() {
-//     const gamepads = self.navigator.getGamepads().filter(Boolean);
-//     return gamepads[gamepads.length - 1];
-// }
-// self.addEventListener("gamepadconnected", () => {
-//     currentGamepad = getCurrentGamepad();
-// });
-// self.addEventListener("gamepaddisconnected", () => {
-//     currentGamepad = getCurrentGamepad();
-// });
-
 export function pollCurrentGamepad() {
     // Why is currentGamepad stale?
     const gamepads = self.navigator.getGamepads().filter(Boolean);

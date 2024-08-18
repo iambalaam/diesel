@@ -3,6 +3,7 @@ import { AnimationStates, Animator } from "../engine/Animator.ts";
 import { Engine } from "../engine/Engine.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
+import { Vec3 } from "../engine/Vec3.ts";
 import { PlayerController } from "./PlayerController.ts";
 
 export const CANVAS_WIDTH = self.innerWidth;
@@ -17,6 +18,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
 
 (async () => {
     const assetPaths = [
+        "tiles.png",
         "Idle0.1/NE.png",
         "Idle0.1/NW.png",
         "Idle0.1/SE.png",
@@ -32,6 +34,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     ] as const;
 
     const assets: {
+        "tiles.png": HTMLImageElement;
         "Idle0.1/NE.png": HTMLImageElement;
         "Idle0.1/NW.png": HTMLImageElement;
         "Idle0.1/SE.png": HTMLImageElement;
@@ -57,6 +60,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     await Promise.all(assetPromises);
 
     const spritesheets: {
+        "tiles.png": Spritesheet;
         "Idle0.1/NE.png": Spritesheet;
         "Idle0.1/NW.png": Spritesheet;
         "Idle0.1/SE.png": Spritesheet;
@@ -170,7 +174,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
             robot = e.createActor("robot");
             robot.animator = new Animator(e, time, animStates);
             robot.behaviours.push(new PlayerController());
-            robot.position = new Vec2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
+            robot.position = new Vec3(0, 0, 1);
         },
         onEarlyRender: (e) => {
             // Background

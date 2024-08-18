@@ -2,6 +2,7 @@ import { SPRITE_MS, Spritesheet } from "./Spritesheet.ts";
 import { Component } from "./Component.ts";
 import { Engine, MS, Time } from "./Engine.ts";
 import { Actor } from "./Actor.ts";
+import { worldToScreen } from "./Transform.ts";
 
 export type AnimationCycle = {
     spriteSheet: Spritesheet;
@@ -67,11 +68,11 @@ export class Animator extends Component {
         }
 
         const index = this.#currentCycle.indexes[cycleIndex];
+
         cycle.spriteSheet.draw(
             this.#ctx,
             index,
-            actor.position.x,
-            actor.position.y,
+            actor.position,
             2,
         );
         return;
