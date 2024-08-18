@@ -5,7 +5,8 @@ import { Input } from "../engine/Input.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 
-const SPEED = 0.002;
+const WALK_SPEED = 0.002;
+const JUMP_SPEED = 0.0015;
 const DEAD_ZONE = 0.1;
 
 const NE = new Vec3(1, 0, 0);
@@ -19,15 +20,21 @@ const getCardinal = (v: Vec3) => {
     return "se";
 };
 
-type State = "idle" | "walk" | "jump";
+type State = "idle" | "walk" | "jump-forward";
 
 export class PlayerController extends Behaviour {
+    isJumping = false;
+    isWalking = false;
+
     targetPos?: Vec3;
     state: State = "idle";
     orientation = new Vec3(0, -1, 0);
-    movement = new Vec2(0, 0);
 
-    getIsometricInput(): Vec2 {
+    pollJumping(): boolean {
+        return Input.Keyboard[" "] || !!Input.Gamepad.buttons[0];
+    }
+
+    pollIsometricInput(): Vec2 {
         let isoInput = new Vec2(0, 0);
         if (Input.Keyboard.D) isoInput.x++;
         if (Input.Keyboard.A) isoInput.x--;
@@ -61,16 +68,37 @@ export class PlayerController extends Behaviour {
             if (distanceLeft.dot(this.orientation) <= 0) {
                 actor.position = this.targetPos;
                 this.targetPos = undefined;
+                this.isJumping = false;
+                this.isWalking = false;
             }
         }
 
         // Set goal
         if (!this.targetPos) {
-            const orthInput = this.isoToWorldSpace(this.getIsometricInput());
-            const moving = orthInput.sqrMag() > 0;
+            let newState: State = this.state;
+            let newOrientation: Vec3 = this.orientation;
 
-            const newState: State = moving ? "walk" : "idle";
-            const newOrientation = moving ? orthInput : this.orientation;
+            if (this.pollJumping()) {
+                this.isJumping = true;
+                newState = "jump-forward";
+                this.targetPos = actor.position.add(this.orientation.scale(4));
+            } else {
+                const orthInput = this.isoToWorldSpace(
+                    this.pollIsometricInput(),
+                );
+                const walking = orthInput.sqrMag() > 0;
+                if (walking) {
+                    this.isWalking = true;
+                    newState = "walk";
+                    newOrientation = orthInput;
+                    this.targetPos = actor.position.add(
+                        orthInput.scale(2),
+                    );
+                } else {
+                    newState = "idle";
+                }
+            }
+
             if (
                 !newOrientation.equals(this.orientation) ||
                 newState !== this.state
@@ -80,16 +108,13 @@ export class PlayerController extends Behaviour {
                 const newCycle = `${newState}-${getCardinal(newOrientation)}`;
                 actor.animator?.start(newCycle, time);
             }
-
-            if (moving) {
-                this.targetPos = actor.position.add(orthInput.scale(2));
-            }
         }
 
         // Attempt to update position
         if (this.targetPos) {
+            const speed = this.isJumping ? JUMP_SPEED : WALK_SPEED;
             actor.position = actor.position.add(
-                this.orientation.scale(SPEED * time.deltaTime),
+                this.orientation.scale(speed * time.deltaTime),
             );
         }
     }

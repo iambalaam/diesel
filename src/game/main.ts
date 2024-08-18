@@ -20,34 +20,42 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
 (async () => {
     const assetPaths = [
         "tiles.png",
-        "Idle0.1/NE.png",
-        "Idle0.1/NW.png",
-        "Idle0.1/SE.png",
-        "Idle0.1/SW.png",
-        "Jump0.1/NE.png",
-        "Jump0.1/NW.png",
-        "Jump0.1/SE.png",
-        "Jump0.1/SW.png",
-        "Walk0.1/NE.png",
-        "Walk0.1/NW.png",
-        "Walk0.1/SE.png",
-        "Walk0.1/SW.png",
+        "Idle/NE.png",
+        "Idle/NW.png",
+        "Idle/SE.png",
+        "Idle/SW.png",
+        "JumpVert/NE.png",
+        "JumpVert/NW.png",
+        "JumpVert/SE.png",
+        "JumpVert/SW.png",
+        "JumpForward/NE.png",
+        "JumpForward/NW.png",
+        "JumpForward/SE.png",
+        "JumpForward/SW.png",
+        "Walk/NE.png",
+        "Walk/NW.png",
+        "Walk/SE.png",
+        "Walk/SW.png",
     ] as const;
 
     const assets: {
         "tiles.png": HTMLImageElement;
-        "Idle0.1/NE.png": HTMLImageElement;
-        "Idle0.1/NW.png": HTMLImageElement;
-        "Idle0.1/SE.png": HTMLImageElement;
-        "Idle0.1/SW.png": HTMLImageElement;
-        "Jump0.1/NE.png": HTMLImageElement;
-        "Jump0.1/NW.png": HTMLImageElement;
-        "Jump0.1/SE.png": HTMLImageElement;
-        "Jump0.1/SW.png": HTMLImageElement;
-        "Walk0.1/NE.png": HTMLImageElement;
-        "Walk0.1/NW.png": HTMLImageElement;
-        "Walk0.1/SE.png": HTMLImageElement;
-        "Walk0.1/SW.png": HTMLImageElement;
+        "Idle/NE.png": HTMLImageElement;
+        "Idle/NW.png": HTMLImageElement;
+        "Idle/SE.png": HTMLImageElement;
+        "Idle/SW.png": HTMLImageElement;
+        "JumpVert/NE.png": HTMLImageElement;
+        "JumpVert/NW.png": HTMLImageElement;
+        "JumpVert/SE.png": HTMLImageElement;
+        "JumpVert/SW.png": HTMLImageElement;
+        "JumpForward/NE.png": HTMLImageElement;
+        "JumpForward/NW.png": HTMLImageElement;
+        "JumpForward/SE.png": HTMLImageElement;
+        "JumpForward/SW.png": HTMLImageElement;
+        "Walk/NE.png": HTMLImageElement;
+        "Walk/NW.png": HTMLImageElement;
+        "Walk/SE.png": HTMLImageElement;
+        "Walk/SW.png": HTMLImageElement;
     } = {} as any;
 
     const assetPromises = assetPaths.map((path) =>
@@ -61,18 +69,22 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     await Promise.all(assetPromises);
 
     const spritesheets: {
-        "Idle0.1/NE.png": Spritesheet;
-        "Idle0.1/NW.png": Spritesheet;
-        "Idle0.1/SE.png": Spritesheet;
-        "Idle0.1/SW.png": Spritesheet;
-        "Jump0.1/NE.png": Spritesheet;
-        "Jump0.1/NW.png": Spritesheet;
-        "Jump0.1/SE.png": Spritesheet;
-        "Jump0.1/SW.png": Spritesheet;
-        "Walk0.1/NE.png": Spritesheet;
-        "Walk0.1/NW.png": Spritesheet;
-        "Walk0.1/SE.png": Spritesheet;
-        "Walk0.1/SW.png": Spritesheet;
+        "Idle/NE.png": Spritesheet;
+        "Idle/NW.png": Spritesheet;
+        "Idle/SE.png": Spritesheet;
+        "Idle/SW.png": Spritesheet;
+        "JumpVert/NE.png": Spritesheet;
+        "JumpVert/NW.png": Spritesheet;
+        "JumpVert/SE.png": Spritesheet;
+        "JumpVert/SW.png": Spritesheet;
+        "JumpForward/NE.png": Spritesheet;
+        "JumpForward/NW.png": Spritesheet;
+        "JumpForward/SE.png": Spritesheet;
+        "JumpForward/SW.png": Spritesheet;
+        "Walk/NE.png": Spritesheet;
+        "Walk/NW.png": Spritesheet;
+        "Walk/SE.png": Spritesheet;
+        "Walk/SW.png": Spritesheet;
     } = {} as any;
 
     Object.entries(assets).forEach(([name, img]) => {
@@ -92,99 +104,137 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     const animStates: AnimationStates = {
         cycles: {
             idle: {
-                spriteSheet: spritesheets["Idle0.1/SE.png"],
+                spriteSheet: spritesheets["Idle/SE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle0.1/SE.png"].sprites),
+                indexes: createRange(spritesheets["Idle/SE.png"].sprites),
             },
             "idle-ne": {
-                spriteSheet: spritesheets["Idle0.1/NE.png"],
+                spriteSheet: spritesheets["Idle/NE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle0.1/NE.png"].sprites),
+                indexes: createRange(spritesheets["Idle/NE.png"].sprites),
             },
             "idle-nw": {
-                spriteSheet: spritesheets["Idle0.1/NW.png"],
+                spriteSheet: spritesheets["Idle/NW.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle0.1/NW.png"].sprites),
+                indexes: createRange(spritesheets["Idle/NW.png"].sprites),
             },
             "idle-se": {
-                spriteSheet: spritesheets["Idle0.1/SE.png"],
+                spriteSheet: spritesheets["Idle/SE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle0.1/SE.png"].sprites),
+                indexes: createRange(spritesheets["Idle/SE.png"].sprites),
             },
             "idle-sw": {
-                spriteSheet: spritesheets["Idle0.1/SW.png"],
+                spriteSheet: spritesheets["Idle/SW.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle0.1/SW.png"].sprites),
+                indexes: createRange(spritesheets["Idle/SW.png"].sprites),
             },
-            "jump-ne": {
-                spriteSheet: spritesheets["Jump0.1/NE.png"],
+            "jump-vert-ne": {
+                spriteSheet: spritesheets["JumpVert/NE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Jump0.1/NE.png"].sprites - 1,
+                    spritesheets["JumpVert/NE.png"].sprites - 1,
                 ),
             },
-            "jump-nw": {
-                spriteSheet: spritesheets["Jump0.1/NW.png"],
+            "jump-vert-nw": {
+                spriteSheet: spritesheets["JumpVert/NW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Jump0.1/NW.png"].sprites - 1,
+                    spritesheets["JumpVert/NW.png"].sprites - 1,
                 ),
             },
-            "jump-se": {
-                spriteSheet: spritesheets["Jump0.1/SE.png"],
+            "jump-vert-se": {
+                spriteSheet: spritesheets["JumpVert/SE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Jump0.1/SE.png"].sprites - 1,
+                    spritesheets["JumpVert/SE.png"].sprites - 1,
                 ),
             },
-            "jump-sw": {
-                spriteSheet: spritesheets["Jump0.1/SW.png"],
+            "jump-vert-sw": {
+                spriteSheet: spritesheets["JumpVert/SW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Jump0.1/SW.png"].sprites - 1,
+                    spritesheets["JumpVert/SW.png"].sprites - 1,
+                ),
+            },
+            "jump-forward-ne": {
+                spriteSheet: spritesheets["JumpForward/NE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["JumpForward/NE.png"].sprites - 1,
+                ),
+            },
+            "jump-forward-nw": {
+                spriteSheet: spritesheets["JumpForward/NW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["JumpForward/NW.png"].sprites - 1,
+                ),
+            },
+            "jump-forward-se": {
+                spriteSheet: spritesheets["JumpForward/SE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["JumpForward/SE.png"].sprites - 1,
+                ),
+            },
+            "jump-forward-sw": {
+                spriteSheet: spritesheets["JumpForward/SW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["JumpForward/SW.png"].sprites - 1,
                 ),
             },
             "walk-ne": {
-                spriteSheet: spritesheets["Walk0.1/NE.png"],
+                spriteSheet: spritesheets["Walk/NE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Walk0.1/NE.png"].sprites,
+                    spritesheets["Walk/NE.png"].sprites,
                 ),
             },
             "walk-nw": {
-                spriteSheet: spritesheets["Walk0.1/NW.png"],
+                spriteSheet: spritesheets["Walk/NW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Walk0.1/NW.png"].sprites,
+                    spritesheets["Walk/NW.png"].sprites,
                 ),
             },
             "walk-se": {
-                spriteSheet: spritesheets["Walk0.1/SE.png"],
+                spriteSheet: spritesheets["Walk/SE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Walk0.1/SE.png"].sprites,
+                    spritesheets["Walk/SE.png"].sprites,
                 ),
             },
             "walk-sw": {
-                spriteSheet: spritesheets["Walk0.1/SW.png"],
+                spriteSheet: spritesheets["Walk/SW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["Walk0.1/SW.png"].sprites,
+                    spritesheets["Walk/SW.png"].sprites,
                 ),
             },
         },
     };
 
     let robot: Actor;
-    let floor: Actor;
+    let floor1: Actor;
+    let floor2: Actor;
     new Engine(ctx, {
         onInit: (e, time) => {
-            floor = e.createActor("floor");
-            floor.position = new Vec3(0, 0, 0);
-            floor.background = new Background(
+            floor1 = e.createActor("floor");
+            floor1.position = new Vec3(6, 0, 0);
+            floor1.background = new Background(
                 e,
-                15,
-                15,
+                4,
+                4,
+                tileSheet,
+                0,
+            );
+            floor2 = e.createActor("floor");
+            floor2.position = new Vec3(0, 0, 0);
+            floor2.background = new Background(
+                e,
+                4,
+                4,
                 tileSheet,
                 0,
             );

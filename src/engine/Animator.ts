@@ -36,6 +36,7 @@ export class Animator extends Component {
     }
 
     start(name: string, time: Time) {
+        console.debug(`starting: ${name}`);
         const cycle = this.#states.cycles[name];
         if (!cycle) throw new Error(`No cycle: ${name}`);
         this.#currentCycle = cycle;
