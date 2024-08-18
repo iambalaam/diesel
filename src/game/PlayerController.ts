@@ -5,7 +5,7 @@ import { Input } from "../engine/Input.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 
-const SPEED = 0.1;
+const SPEED = 0.002;
 const DEAD_ZONE = 0.1;
 
 const NE = new Vec3(1, 0, 0);
@@ -22,12 +22,12 @@ const getCardinal = (v: Vec3) => {
 type State = "idle" | "walk" | "jump";
 
 export class PlayerController extends Behaviour {
+    targetPos?: Vec3;
     state: State = "idle";
     orientation = new Vec3(0, -1, 0);
     movement = new Vec2(0, 0);
 
-    update(actor: Actor, time: Time): void {
-        //
+    getIsometricInput(): Vec2 {
         let isoInput = new Vec2(0, 0);
         if (Input.Keyboard.D) isoInput.x++;
         if (Input.Keyboard.A) isoInput.x--;
@@ -39,35 +39,58 @@ export class PlayerController extends Behaviour {
         if (isoInput.sqrMag() < DEAD_ZONE) {
             isoInput = new Vec2(0, 0);
         }
+        return isoInput;
+    }
 
-        let orthInput = new Vec3(0, 0, 0);
+    isoToWorldSpace(iso: Vec2): Vec3 {
+        if (iso.x > 0 && iso.y < 0) {
+            return new Vec3(1, 0, 0);
+        } else if (iso.x < 0 && iso.y < 0) {
+            return new Vec3(0, 1, 0);
+        } else if (iso.x > 0 && iso.y > 0) {
+            return new Vec3(0, -1, 0);
+        } else if (iso.x < 0 && iso.y > 0) {
+            return new Vec3(-1, 0, 0);
+        } else return new Vec3(0, 0, 0);
+    }
 
-        if (isoInput.x > 0 && isoInput.y < 0) {
-            orthInput = new Vec3(1, 0, 0);
-        } else if (isoInput.x < 0 && isoInput.y < 0) {
-            orthInput = new Vec3(0, 1, 0);
-        } else if (isoInput.x > 0 && isoInput.y > 0) {
-            orthInput = new Vec3(0, -1, 0);
-        } else if (isoInput.x < 0 && isoInput.y > 0) {
-            orthInput = new Vec3(-1, 0, 0);
-        } else orthInput = new Vec3(0, 0, 0);
-
-        const newState = orthInput.sqrMag() === 0 ? "idle" : "walk";
-        const newOrientation = orthInput.sqrMag() === 0
-            ? this.orientation
-            : orthInput;
-        if (
-            !newOrientation.equals(this.orientation) || newState !== this.state
-        ) {
-            this.state = newState;
-            this.orientation = newOrientation;
-            const newCycle = `${newState}-${getCardinal(newOrientation)}`;
-            actor.animator?.start(newCycle, time);
+    update(actor: Actor, time: Time): void {
+        // Maybe achieved goal
+        if (this.targetPos) {
+            const distanceLeft = this.targetPos.subtract(actor.position);
+            if (distanceLeft.dot(this.orientation) <= 0) {
+                actor.position = this.targetPos;
+                this.targetPos = undefined;
+            }
         }
 
-        const target = orthInput.scale(SPEED);
-        const targetV3 = new Vec3(target.x, target.y, 0);
+        // Set goal
+        if (!this.targetPos) {
+            const orthInput = this.isoToWorldSpace(this.getIsometricInput());
+            const moving = orthInput.sqrMag() > 0;
 
-        actor.position = actor.position.add(targetV3);
+            const newState: State = moving ? "walk" : "idle";
+            const newOrientation = moving ? orthInput : this.orientation;
+            if (
+                !newOrientation.equals(this.orientation) ||
+                newState !== this.state
+            ) {
+                this.state = newState;
+                this.orientation = newOrientation;
+                const newCycle = `${newState}-${getCardinal(newOrientation)}`;
+                actor.animator?.start(newCycle, time);
+            }
+
+            if (moving) {
+                this.targetPos = actor.position.add(orthInput.scale(2));
+            }
+        }
+
+        // Attempt to update position
+        if (this.targetPos) {
+            actor.position = actor.position.add(
+                this.orientation.scale(SPEED * time.deltaTime),
+            );
+        }
     }
 }

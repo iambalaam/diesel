@@ -1,8 +1,10 @@
-import { SPRITE_MS, Spritesheet } from "./Spritesheet.ts";
+import { Spritesheet } from "./Spritesheet.ts";
 import { Component } from "./Component.ts";
 import { Engine, MS, Time } from "./Engine.ts";
 import { Actor } from "./Actor.ts";
-import { worldToScreen } from "./Transform.ts";
+
+export const SPRITE_FPS = 40;
+export const SPRITE_MS = 1000 / SPRITE_FPS;
 
 export type AnimationCycle = {
     spriteSheet: Spritesheet;
@@ -73,7 +75,6 @@ export class Animator extends Component {
             this.#ctx,
             index,
             actor.position,
-            2,
         );
         return;
     }

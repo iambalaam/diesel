@@ -24,4 +24,12 @@ export class Vec3 {
     scale(s: number) {
         return new Vec3(this.x * s, this.y * s, this.z * s);
     }
+
+    dot(vec3: Vec3) {
+        return this.x * vec3.x + this.y * vec3.y + this.z * vec3.z;
+    }
+
+    toString() {
+        return `V3(${this.x}, ${this.y}, ${this.z})`;
+    }
 }

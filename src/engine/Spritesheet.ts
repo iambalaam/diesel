@@ -3,8 +3,6 @@ import { worldToScreen } from "./Transform.ts";
 import { Vec2 } from "./Vec2.ts";
 import { Vec3 } from "./Vec3.ts";
 
-export const SPRITE_FPS = 30;
-export const SPRITE_MS = 1000 / SPRITE_FPS;
 export interface SpriteSheetConfig {
     spriteSize: Vec2;
     spriteAnchor: Vec2;

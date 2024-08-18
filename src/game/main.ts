@@ -1,5 +1,6 @@
 import { Actor } from "../engine/Actor.ts";
 import { AnimationStates, Animator } from "../engine/Animator.ts";
+import { Background } from "../engine/Background.ts";
 import { Engine } from "../engine/Engine.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
@@ -60,7 +61,6 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     await Promise.all(assetPromises);
 
     const spritesheets: {
-        "tiles.png": Spritesheet;
         "Idle0.1/NE.png": Spritesheet;
         "Idle0.1/NW.png": Spritesheet;
         "Idle0.1/SE.png": Spritesheet;
@@ -74,12 +74,19 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "Walk0.1/SE.png": Spritesheet;
         "Walk0.1/SW.png": Spritesheet;
     } = {} as any;
+
     Object.entries(assets).forEach(([name, img]) => {
+        if (name.startsWith("tiles")) return;
         (spritesheets as any)[name] = new Spritesheet(img, {
             spriteSize: new Vec2(128, 128),
             spriteAnchor: new Vec2(64, 128),
             rows: true,
         });
+    });
+    const tileSheet = new Spritesheet(assets["tiles.png"], {
+        spriteSize: new Vec2(64, 64),
+        spriteAnchor: new Vec2(32, 64),
+        rows: true,
     });
 
     const animStates: AnimationStates = {
@@ -169,8 +176,19 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     };
 
     let robot: Actor;
+    let floor: Actor;
     new Engine(ctx, {
         onInit: (e, time) => {
+            floor = e.createActor("floor");
+            floor.position = new Vec3(0, 0, 0);
+            floor.background = new Background(
+                e,
+                15,
+                15,
+                tileSheet,
+                0,
+            );
+
             robot = e.createActor("robot");
             robot.animator = new Animator(e, time, animStates);
             robot.behaviours.push(new PlayerController());

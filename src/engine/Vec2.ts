@@ -24,4 +24,12 @@ export class Vec2 {
     scale(s: number) {
         return new Vec2(this.x * s, this.y * s);
     }
+
+    dot(vec2: Vec2) {
+        return this.x * vec2.x + this.y * vec2.y;
+    }
+
+    toString() {
+        return `V2(${this.x}, ${this.y})`;
+    }
 }
