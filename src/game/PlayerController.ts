@@ -44,11 +44,14 @@ export class PlayerController extends Behaviour {
         else if (input.x < 0 && input.y > 0) input = new Vec2(-1, 1);
         else input = new Vec2(0, 0);
 
-        const state = input.sqrMag() === 0 ? "idle" : "walk";
-        if (!input.equals(this.orientation) || state !== this.state) {
-            this.orientation = input;
-            this.state = state;
-            const newCycle = `${state}-${getCardinal(input)}`;
+        const newState = input.sqrMag() === 0 ? "idle" : "walk";
+        const newOrientation = input.sqrMag() === 0 ? this.orientation : input;
+        if (
+            !newOrientation.equals(this.orientation) || newState !== this.state
+        ) {
+            this.state = newState;
+            this.orientation = newOrientation;
+            const newCycle = `${newState}-${getCardinal(newOrientation)}`;
             actor.animator?.start(newCycle, time);
         }
 
