@@ -72,7 +72,7 @@ export class Animator extends Component {
             index,
             actor.position.x,
             actor.position.y,
-            2,
+            4,
         );
         return;
     }

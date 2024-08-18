@@ -1,6 +1,6 @@
 self.addEventListener("keydown", (e) => {
     const key = e.key.toUpperCase();
-    if (key in Input) {
+    if (key in Input.Keyboard) {
         // @ts-ignore
         Input.Keyboard[key] = true;
     }
@@ -8,7 +8,7 @@ self.addEventListener("keydown", (e) => {
 
 self.addEventListener("keyup", (e) => {
     const key = e.key.toUpperCase();
-    if (key in Input) {
+    if (key in Input.Keyboard) {
         // @ts-ignore
         Input.Keyboard[key] = false;
     }

@@ -13,57 +13,153 @@ canvas.height = CANVAS_HEIGHT;
 const ctx = canvas.getContext("2d")!;
 ctx.imageSmoothingEnabled = false;
 
+const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
+
 (async () => {
-    const idleImg = new Image();
-    const jumpImg = new Image();
-    const idlePromise = new Promise((resolve) => {
-        idleImg.src = "robot-idle0.1.png";
-        idleImg.onload = resolve;
-    });
-    const jumpPromise = new Promise((resolve) => {
-        jumpImg.src = "robot-jump0.1.png";
-        jumpImg.onload = resolve;
-    });
+    const assetPaths = [
+        "Idle0.1/NE.png",
+        "Idle0.1/NW.png",
+        "Idle0.1/SE.png",
+        "Idle0.1/SW.png",
+        "Jump0.1/NE.png",
+        "Jump0.1/NW.png",
+        "Jump0.1/SE.png",
+        "Jump0.1/SW.png",
+        "Walk0.1/NE.png",
+        "Walk0.1/NW.png",
+        "Walk0.1/SE.png",
+        "Walk0.1/SW.png",
+    ] as const;
 
-    await idlePromise;
-    await jumpPromise;
+    const assets: {
+        "Idle0.1/NE.png": HTMLImageElement;
+        "Idle0.1/NW.png": HTMLImageElement;
+        "Idle0.1/SE.png": HTMLImageElement;
+        "Idle0.1/SW.png": HTMLImageElement;
+        "Jump0.1/NE.png": HTMLImageElement;
+        "Jump0.1/NW.png": HTMLImageElement;
+        "Jump0.1/SE.png": HTMLImageElement;
+        "Jump0.1/SW.png": HTMLImageElement;
+        "Walk0.1/NE.png": HTMLImageElement;
+        "Walk0.1/NW.png": HTMLImageElement;
+        "Walk0.1/SE.png": HTMLImageElement;
+        "Walk0.1/SW.png": HTMLImageElement;
+    } = {} as any;
 
-    const idleSheet = new Spritesheet(idleImg, {
-        spriteSize: new Vec2(128, 128),
-        spriteAnchor: new Vec2(64, 128),
-        rows: true,
-    });
-    const jumpSheet = new Spritesheet(jumpImg, {
-        spriteSize: new Vec2(128, 128),
-        spriteAnchor: new Vec2(64, 128),
-        rows: true,
-    });
-
-    const idleIndexes = new Array(idleSheet.sprites - 1).fill(0).map((_, i) =>
-        i
+    const assetPromises = assetPaths.map((path) =>
+        new Promise((resolve) => {
+            const img = new Image();
+            assets[path] = img;
+            img.src = path;
+            img.onload = resolve;
+        })
     );
-    const jumpUpIndexes = new Array(jumpSheet.sprites - 1).fill(0).map((_, i) =>
-        i
-    );
-    const jupmDownIndexes = [...jumpUpIndexes].reverse();
+    await Promise.all(assetPromises);
+
+    const spritesheets: {
+        "Idle0.1/NE.png": Spritesheet;
+        "Idle0.1/NW.png": Spritesheet;
+        "Idle0.1/SE.png": Spritesheet;
+        "Idle0.1/SW.png": Spritesheet;
+        "Jump0.1/NE.png": Spritesheet;
+        "Jump0.1/NW.png": Spritesheet;
+        "Jump0.1/SE.png": Spritesheet;
+        "Jump0.1/SW.png": Spritesheet;
+        "Walk0.1/NE.png": Spritesheet;
+        "Walk0.1/NW.png": Spritesheet;
+        "Walk0.1/SE.png": Spritesheet;
+        "Walk0.1/SW.png": Spritesheet;
+    } = {} as any;
+    Object.entries(assets).forEach(([name, img]) => {
+        (spritesheets as any)[name] = new Spritesheet(img, {
+            spriteSize: new Vec2(128, 128),
+            spriteAnchor: new Vec2(64, 128),
+            rows: true,
+        });
+    });
+
     const animStates: AnimationStates = {
         cycles: {
             idle: {
-                spriteSheet: idleSheet,
+                spriteSheet: spritesheets["Idle0.1/SE.png"],
                 looping: true,
-                indexes: idleIndexes,
+                indexes: createRange(spritesheets["Idle0.1/SE.png"].sprites),
             },
-            "jump-up": {
-                spriteSheet: jumpSheet,
-                looping: false,
-                indexes: jumpUpIndexes,
-                end: "jump-down",
+            "idle-ne": {
+                spriteSheet: spritesheets["Idle0.1/NE.png"],
+                looping: true,
+                indexes: createRange(spritesheets["Idle0.1/NE.png"].sprites),
             },
-            "jump-down": {
-                spriteSheet: jumpSheet,
-                looping: false,
-                indexes: jupmDownIndexes,
-                end: "idle",
+            "idle-nw": {
+                spriteSheet: spritesheets["Idle0.1/NW.png"],
+                looping: true,
+                indexes: createRange(spritesheets["Idle0.1/NW.png"].sprites),
+            },
+            "idle-se": {
+                spriteSheet: spritesheets["Idle0.1/SE.png"],
+                looping: true,
+                indexes: createRange(spritesheets["Idle0.1/SE.png"].sprites),
+            },
+            "idle-sw": {
+                spriteSheet: spritesheets["Idle0.1/SW.png"],
+                looping: true,
+                indexes: createRange(spritesheets["Idle0.1/SW.png"].sprites),
+            },
+            "jump-ne": {
+                spriteSheet: spritesheets["Jump0.1/NE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Jump0.1/NE.png"].sprites - 1,
+                ),
+            },
+            "jump-nw": {
+                spriteSheet: spritesheets["Jump0.1/NW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Jump0.1/NW.png"].sprites - 1,
+                ),
+            },
+            "jump-se": {
+                spriteSheet: spritesheets["Jump0.1/SE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Jump0.1/SE.png"].sprites - 1,
+                ),
+            },
+            "jump-sw": {
+                spriteSheet: spritesheets["Jump0.1/SW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Jump0.1/SW.png"].sprites - 1,
+                ),
+            },
+            "walk-ne": {
+                spriteSheet: spritesheets["Walk0.1/NE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Walk0.1/NE.png"].sprites,
+                ),
+            },
+            "walk-nw": {
+                spriteSheet: spritesheets["Walk0.1/NW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Walk0.1/NW.png"].sprites,
+                ),
+            },
+            "walk-se": {
+                spriteSheet: spritesheets["Walk0.1/SE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Walk0.1/SE.png"].sprites,
+                ),
+            },
+            "walk-sw": {
+                spriteSheet: spritesheets["Walk0.1/SW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["Walk0.1/SW.png"].sprites,
+                ),
             },
         },
     };

@@ -1,11 +1,27 @@
 export class Vec2 {
     constructor(public x: number, public y: number) {}
 
+    equals(vec2: Vec2) {
+        return this.x === vec2.x && this.y === vec2.y;
+    }
+
     add(vec2: Vec2) {
         return new Vec2(this.x + vec2.x, this.y + vec2.y);
     }
 
     subtract(vec2: Vec2) {
         return new Vec2(this.x - vec2.x, this.y - vec2.y);
+    }
+
+    sqrMag() {
+        return Math.pow(this.x, 2) + Math.pow(this.y, 2);
+    }
+
+    mag() {
+        return Math.sqrt(this.sqrMag());
+    }
+
+    scale(s: number) {
+        return new Vec2(this.x * s, this.y * s);
     }
 }
