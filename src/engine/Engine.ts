@@ -1,8 +1,9 @@
 import { Actor } from "./Actor.ts";
-import { Input, pollCurrentGamepad } from "./Input.ts";
+import { pollCurrentGamepad } from "./Input.ts";
 
 const UPDATE_HZ = 60;
 const UPDATE_MS = 1000 / UPDATE_HZ;
+export const DEBUG = new URL(self.location.href).searchParams.has("debug");
 
 export type MS = number;
 export interface Time {

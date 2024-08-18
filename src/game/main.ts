@@ -2,6 +2,7 @@ import { Actor } from "../engine/Actor.ts";
 import { AnimationStates, Animator } from "../engine/Animator.ts";
 import { Engine } from "../engine/Engine.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
+import { Vec2 } from "../engine/Vec2.ts";
 import { PlayerController } from "./PlayerController.ts";
 
 export const CANVAS_WIDTH = self.innerWidth;
@@ -28,13 +29,13 @@ ctx.imageSmoothingEnabled = false;
     await jumpPromise;
 
     const idleSheet = new Spritesheet(idleImg, {
-        spriteWidth: 128,
-        spriteHeight: 128,
+        spriteSize: new Vec2(128, 128),
+        spriteAnchor: new Vec2(64, 128),
         rows: true,
     });
     const jumpSheet = new Spritesheet(jumpImg, {
-        spriteWidth: 128,
-        spriteHeight: 128,
+        spriteSize: new Vec2(128, 128),
+        spriteAnchor: new Vec2(64, 128),
         rows: true,
     });
 
@@ -73,6 +74,7 @@ ctx.imageSmoothingEnabled = false;
             robot = e.createActor("robot");
             robot.animator = new Animator(e, time, animStates);
             robot.behaviours.push(new PlayerController());
+            robot.position = new Vec2(CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2);
         },
         onEarlyRender: (e) => {
             // Background
