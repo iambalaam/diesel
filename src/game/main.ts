@@ -2,6 +2,7 @@ import { Actor } from "../engine/Actor.ts";
 import { AnimationStates, Animator } from "../engine/Animator.ts";
 import { Background } from "../engine/Background.ts";
 import { Engine } from "../engine/Engine.ts";
+import { SpriteRenderer } from "../engine/SpriteRenderer.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
@@ -109,118 +110,143 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
             idle: {
                 spriteSheet: spritesheets["Idle/SE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle/SE.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Idle/SE.png"].sprites.length,
+                ),
             },
             "idle-ne": {
                 spriteSheet: spritesheets["Idle/NE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle/NE.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Idle/NE.png"].sprites.length,
+                ),
             },
             "idle-nw": {
                 spriteSheet: spritesheets["Idle/NW.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle/NW.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Idle/NW.png"].sprites.length,
+                ),
             },
             "idle-se": {
                 spriteSheet: spritesheets["Idle/SE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle/SE.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Idle/SE.png"].sprites.length,
+                ),
             },
             "idle-sw": {
                 spriteSheet: spritesheets["Idle/SW.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Idle/SW.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Idle/SW.png"].sprites.length,
+                ),
             },
             "jump-vert-ne": {
                 spriteSheet: spritesheets["JumpVert/NE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/NE.png"].sprites - 1,
+                    spritesheets["JumpVert/NE.png"].sprites.length - 1,
                 ),
             },
             "jump-vert-nw": {
                 spriteSheet: spritesheets["JumpVert/NW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/NW.png"].sprites - 1,
+                    spritesheets["JumpVert/NW.png"].sprites.length - 1,
                 ),
             },
             "jump-vert-se": {
                 spriteSheet: spritesheets["JumpVert/SE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/SE.png"].sprites - 1,
+                    spritesheets["JumpVert/SE.png"].sprites.length - 1,
                 ),
             },
             "jump-vert-sw": {
                 spriteSheet: spritesheets["JumpVert/SW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/SW.png"].sprites - 1,
+                    spritesheets["JumpVert/SW.png"].sprites.length - 1,
                 ),
             },
             "jump-forward-ne": {
                 spriteSheet: spritesheets["JumpForward/NE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpForward/NE.png"].sprites - 1,
+                    spritesheets["JumpForward/NE.png"].sprites.length - 1,
                 ),
             },
             "jump-forward-nw": {
                 spriteSheet: spritesheets["JumpForward/NW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpForward/NW.png"].sprites - 1,
+                    spritesheets["JumpForward/NW.png"].sprites.length - 1,
                 ),
             },
             "jump-forward-se": {
                 spriteSheet: spritesheets["JumpForward/SE.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpForward/SE.png"].sprites - 1,
+                    spritesheets["JumpForward/SE.png"].sprites.length - 1,
                 ),
             },
             "jump-forward-sw": {
                 spriteSheet: spritesheets["JumpForward/SW.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpForward/SW.png"].sprites - 1,
+                    spritesheets["JumpForward/SW.png"].sprites.length - 1,
                 ),
             },
             "walk-ne": {
                 spriteSheet: spritesheets["Walk/NE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Walk/NE.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Walk/NE.png"].sprites.length,
+                ),
             },
             "walk-nw": {
                 spriteSheet: spritesheets["Walk/NW.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Walk/NW.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Walk/NW.png"].sprites.length,
+                ),
             },
             "walk-se": {
                 spriteSheet: spritesheets["Walk/SE.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Walk/SE.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Walk/SE.png"].sprites.length,
+                ),
             },
             "walk-sw": {
                 spriteSheet: spritesheets["Walk/SW.png"],
                 looping: true,
-                indexes: createRange(spritesheets["Walk/SW.png"].sprites),
+                indexes: createRange(
+                    spritesheets["Walk/SW.png"].sprites.length,
+                ),
             },
         },
     };
 
     let robot: Actor;
     let worldRenderer: Actor;
-    const world = new World(new Vec2(4, 4));
+    const world = new World(new Vec2(5, 5));
+    world.addBox(new Vec3(2, 2, 0), new Vec3(1, 1, 1), {
+        isClimbable: true,
+        spriteIndex: 0,
+    });
+
     new Engine(ctx, {
         onInit: (e, time) => {
             worldRenderer = e.createActor("world");
             worldRenderer.position = new Vec3(0, 0, -1);
-            worldRenderer.addBehaviour(new WorldRenderer(e, world, tileSheet));
+            worldRenderer.renderer = new SpriteRenderer();
+            worldRenderer.addBehaviour(new WorldRenderer(world, tileSheet));
 
             robot = e.createActor("robot");
             robot.animator = new Animator(e, time, animStates);
+            robot.renderer = new SpriteRenderer();
             robot.addBehaviour(new PlayerController(world));
             robot.position = new Vec3(0, 0, 0);
         },

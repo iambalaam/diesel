@@ -45,6 +45,9 @@ export class Animator extends Component {
     }
 
     render(actor: Actor, time: Time) {
+        const { renderer } = actor;
+        if (!renderer) return;
+
         let cycle = this.#currentCycle;
         const frameNumber = Math.floor(
             (time.time - this.#currentCycleStart) /
@@ -72,11 +75,8 @@ export class Animator extends Component {
 
         const index = this.#currentCycle.indexes[cycleIndex];
 
-        cycle.spriteSheet.draw(
-            this.#ctx,
-            index,
-            actor.position,
-        );
+        renderer.renderSprite(cycle.spriteSheet, index, actor.position);
+
         return;
     }
 }

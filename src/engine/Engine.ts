@@ -1,5 +1,6 @@
 import { Actor } from "./Actor.ts";
 import { pollCurrentGamepad } from "./Input.ts";
+import { RenderReq } from "./SpriteRenderer.ts";
 
 const UPDATE_HZ = 60;
 const UPDATE_MS = 1000 / UPDATE_HZ;
@@ -50,9 +51,13 @@ export class Engine {
     }
 
     #actorRender(_engine: Engine, time: Time) {
+        const reqs: RenderReq[] = [];
         for (const actor of this.#actors) {
-            actor.render(time);
+            reqs.push(...actor.render(time));
         }
+        //Commit
+        reqs.sort((req1, req2) => req1.zIndex - req2.zIndex);
+        reqs.forEach((req) => req.draw(this.ctx));
     }
 
     #actorUpdate(_engine: Engine, time: Time) {
