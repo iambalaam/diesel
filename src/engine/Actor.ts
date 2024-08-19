@@ -15,6 +15,12 @@ export class Actor {
         this.behaviours = [];
     }
 
+    init(time: Time) {
+        for (const behaviour of this.behaviours) {
+            behaviour.init(this);
+        }
+    }
+
     render(time: Time) {
         for (const behaviour of this.behaviours) {
             behaviour.render(this, time);

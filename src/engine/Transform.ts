@@ -6,9 +6,9 @@ self.addEventListener("resize", () => {
     center = new Vec2(self.innerWidth / 2, self.innerHeight / 2);
 });
 
-const xDir = new Vec2(32, -16);
-const yDir = new Vec2(-32, -16);
-const zDir = new Vec2(0, -32);
+const xDir = new Vec2(64, -32);
+const yDir = new Vec2(-64, -32);
+const zDir = new Vec2(0, -64);
 
 export function worldToScreen(world: Vec3): Vec2 {
     return center

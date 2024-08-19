@@ -49,6 +49,7 @@ export class Engine {
     createActor(name: string) {
         const actor = new Actor(name);
         this.#actors.push(actor);
+        actor.init();
         return actor;
     }
 

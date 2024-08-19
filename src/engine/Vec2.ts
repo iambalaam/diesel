@@ -1,6 +1,10 @@
 export class Vec2 {
     constructor(public x: number, public y: number) {}
 
+    clone() {
+        return new Vec2(this.x, this.y);
+    }
+
     equals(vec2: Vec2) {
         return this.x === vec2.x && this.y === vec2.y;
     }
