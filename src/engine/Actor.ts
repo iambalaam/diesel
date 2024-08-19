@@ -5,33 +5,32 @@ import { Time } from "./Engine.ts";
 import { Vec3 } from "./Vec3.ts";
 
 export class Actor {
-    position: Vec3;
-    animator?: Animator;
-    background?: Background;
-    behaviours: Behaviour[];
+  position: Vec3;
+  animator?: Animator;
+  background?: Background;
+  #behaviours: Behaviour[];
 
-    constructor(public name: string) {
-        this.position = new Vec3(0, 0, 0);
-        this.behaviours = [];
-    }
+  constructor(public name: string) {
+    this.position = new Vec3(0, 0, 0);
+    this.#behaviours = [];
+  }
 
-    init(time: Time) {
-        for (const behaviour of this.behaviours) {
-            behaviour.init(this);
-        }
-    }
+  addBehaviour(behaviour: Behaviour) {
+    this.#behaviours.push(behaviour);
+    behaviour.init(this);
+  }
 
-    render(time: Time) {
-        for (const behaviour of this.behaviours) {
-            behaviour.render(this, time);
-        }
-        this.background?.render(this);
-        this.animator?.render(this, time);
+  render(time: Time) {
+    for (const behaviour of this.#behaviours) {
+      behaviour.render(this, time);
     }
+    this.background?.render(this);
+    this.animator?.render(this, time);
+  }
 
-    update(time: Time) {
-        for (const behaviour of this.behaviours) {
-            behaviour.update(this, time);
-        }
+  update(time: Time) {
+    for (const behaviour of this.#behaviours) {
+      behaviour.update(this, time);
     }
+  }
 }

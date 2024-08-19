@@ -34,10 +34,7 @@ export class Engine {
 
     #actors: Actor[] = [];
 
-    constructor(
-        ctx: CanvasRenderingContext2D,
-        hooks: Partial<Hooks>,
-    ) {
+    constructor(ctx: CanvasRenderingContext2D, hooks: Partial<Hooks>) {
         this.ctx = ctx;
         this.#hooks = { ...this.#hooks, ...hooks };
 
@@ -49,7 +46,6 @@ export class Engine {
     createActor(name: string) {
         const actor = new Actor(name);
         this.#actors.push(actor);
-        actor.init();
         return actor;
     }
 
