@@ -20,7 +20,7 @@ const getVecPrefix = (v: Vec3) => {
   return prefix;
 };
 
-const getPosPrefix = (pos: Position) => {
+export const getPosPrefix = (pos: Position) => {
   return `${getVecPrefix(pos.down)}/${getVecPrefix(pos.forwards)}`;
 };
 
@@ -182,9 +182,10 @@ export class PlayerController extends Behaviour {
           this.currentAction = walk;
           actor?.animator?.start(`${getPosPrefix(targetPos)}/walk`, time);
         } else if (this.canClimbUp(orthInput)) {
+          actor.position.forwards = orthInput;
           const targetPos = {
             translation: actor.position.translation,
-            down: actor.position.forwards,
+            down: orthInput,
             forwards: actor.position.down.scale(-1),
           };
           const climbUp = new ClimbUp();
@@ -195,8 +196,9 @@ export class PlayerController extends Behaviour {
             time,
           );
           this.currentAction = climbUp;
+
           actor?.animator?.start(
-            `${getPosPrefix(targetPos)}/climb-up`,
+            `${getPosPrefix(actor.position)}/climb-up`,
             time,
           );
         }

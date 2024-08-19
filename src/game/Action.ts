@@ -2,6 +2,7 @@ import { Actor, Position, ZERO_POSITION } from "../engine/Actor.ts";
 import { SPRITE_MS } from "../engine/Animator.ts";
 import { MS, Time } from "../engine/Engine.ts";
 import { Vec3 } from "../engine/Vec3.ts";
+import { getPosPrefix } from "../game/PlayerController.ts";
 
 export abstract class Action {
     startTime: MS = 0;
@@ -111,7 +112,7 @@ export class Jump extends Action {
 
 export class ClimbUp extends Action {
     get duration() {
-        return SPRITE_MS * 45;
+        return SPRITE_MS * 36;
     }
     startAction(
         start: Position,
@@ -133,8 +134,8 @@ export class ClimbUp extends Action {
         };
         this.target = {
             translation: start.translation.clone(),
-            forwards: end.down.scale(-1),
-            down: end.forwards.clone(),
+            forwards: end.forwards.clone(),
+            down: end.down.clone(),
         };
         actor.position.forwards = start.forwards;
     }

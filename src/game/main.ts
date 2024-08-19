@@ -22,34 +22,36 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
 (async () => {
     const assetPaths = [
         "tiles.png",
-        "ClimbUp/NE.png",
-        "ClimbUp/NW.png",
-        "JumpVert/NE.png",
-        "JumpVert/NW.png",
-        "JumpVert/SE.png",
-        "JumpVert/SW.png",
+
         "-z/-x/idle.png",
         "-z/-x/walk.png",
         "-z/-x/jump.png",
+
         "-z/+x/idle.png",
         "-z/+x/walk.png",
         "-z/+x/jump.png",
+        "-z/+x/climb-up.png",
+
         "-z/-y/idle.png",
         "-z/-y/walk.png",
         "-z/-y/jump.png",
+
         "-z/+y/idle.png",
         "-z/+y/walk.png",
         "-z/+y/jump.png",
+        "-z/+y/climb-up.png",
+
+        "+x/+z/idle.png",
+        "+x/+z/walk.png",
+        "+x/+z/climb-over.png",
+
+        "+y/+z/idle.png",
+        "+y/+z/walk.png",
+        "+y/+z/climb-over.png",
     ] as const;
 
     const assets: {
         "tiles.png": HTMLImageElement;
-        "ClimbUp/NE.png": HTMLImageElement;
-        "ClimbUp/NW.png": HTMLImageElement;
-        "JumpVert/NE.png": HTMLImageElement;
-        "JumpVert/NW.png": HTMLImageElement;
-        "JumpVert/SE.png": HTMLImageElement;
-        "JumpVert/SW.png": HTMLImageElement;
 
         "-z/-x/idle.png": HTMLImageElement;
         "-z/-x/walk.png": HTMLImageElement;
@@ -58,6 +60,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/+x/idle.png": HTMLImageElement;
         "-z/+x/walk.png": HTMLImageElement;
         "-z/+x/jump.png": HTMLImageElement;
+        "-z/+x/climb-up.png": HTMLImageElement;
 
         "-z/-y/idle.png": HTMLImageElement;
         "-z/-y/walk.png": HTMLImageElement;
@@ -66,6 +69,15 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/+y/idle.png": HTMLImageElement;
         "-z/+y/walk.png": HTMLImageElement;
         "-z/+y/jump.png": HTMLImageElement;
+        "-z/+y/climb-up.png": HTMLImageElement;
+
+        "+x/+z/idle.png": HTMLImageElement;
+        "+x/+z/walk.png": HTMLImageElement;
+        "+x/+z/climb-over.png": HTMLImageElement;
+
+        "+y/+z/idle.png": HTMLImageElement;
+        "+y/+z/walk.png": HTMLImageElement;
+        "+y/+z/climb-over.png": HTMLImageElement;
     } = {} as any;
 
     const assetPromises = assetPaths.map(
@@ -81,11 +93,6 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
 
     const spritesheets: {
         "ClimbUp/NE.png": Spritesheet;
-        "ClimbUp/NW.png": Spritesheet;
-        "JumpVert/NE.png": Spritesheet;
-        "JumpVert/NW.png": Spritesheet;
-        "JumpVert/SE.png": Spritesheet;
-        "JumpVert/SW.png": Spritesheet;
 
         "-z/-x/idle.png": Spritesheet;
         "-z/-x/walk.png": Spritesheet;
@@ -94,6 +101,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/+x/idle.png": Spritesheet;
         "-z/+x/walk.png": Spritesheet;
         "-z/+x/jump.png": Spritesheet;
+        "-z/+x/climb-up.png": Spritesheet;
 
         "-z/-y/idle.png": Spritesheet;
         "-z/-y/walk.png": Spritesheet;
@@ -102,6 +110,15 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/+y/idle.png": Spritesheet;
         "-z/+y/walk.png": Spritesheet;
         "-z/+y/jump.png": Spritesheet;
+        "-z/+y/climb-up.png": Spritesheet;
+
+        "+x/+z/idle.png": Spritesheet;
+        "+x/+z/walk.png": Spritesheet;
+        "+x/+z/climb-over.png": Spritesheet;
+
+        "+y/+z/idle.png": Spritesheet;
+        "+y/+z/walk.png": Spritesheet;
+        "+y/+z/climb-over.png": Spritesheet;
     } = {} as any;
 
     Object.entries(assets).forEach(([name, img]) => {
@@ -172,6 +189,13 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
                     spritesheets["-z/+x/jump.png"].sprites.length,
                 ),
             },
+            "-z/+x/climb-up": {
+                spriteSheet: spritesheets["-z/+x/climb-up.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["-z/+x/climb-up.png"].sprites.length,
+                ),
+            },
 
             //
             "-z/-y/idle": {
@@ -218,47 +242,55 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
                     spritesheets["-z/+y/jump.png"].sprites.length,
                 ),
             },
+            "-z/+y/climb-up": {
+                spriteSheet: spritesheets["-z/+y/climb-up.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["-z/+y/climb-up.png"].sprites.length,
+                ),
+            },
 
-            "climb-up-ne": {
-                spriteSheet: spritesheets["ClimbUp/NE.png"],
+            "+x/+z/idle": {
+                spriteSheet: spritesheets["+x/+z/idle.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["ClimbUp/NE.png"].sprites.length,
+                    spritesheets["+x/+z/idle.png"].sprites.length,
                 ),
             },
-            "climb-up-nw": {
-                spriteSheet: spritesheets["ClimbUp/NW.png"],
+            "+x/+z/walk": {
+                spriteSheet: spritesheets["+x/+z/walk.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["ClimbUp/NW.png"].sprites.length,
+                    spritesheets["+x/+z/walk.png"].sprites.length,
                 ),
             },
-            "jump-vert-ne": {
-                spriteSheet: spritesheets["JumpVert/NE.png"],
+            "+x/+z/climb-over": {
+                spriteSheet: spritesheets["+x/+z/climb-over.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/NE.png"].sprites.length - 1,
+                    spritesheets["+x/+z/climb-over.png"].sprites.length,
                 ),
             },
-            "jump-vert-nw": {
-                spriteSheet: spritesheets["JumpVert/NW.png"],
+
+            "+y/+z/idle": {
+                spriteSheet: spritesheets["+y/+z/idle.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/NW.png"].sprites.length - 1,
+                    spritesheets["+y/+z/idle.png"].sprites.length,
                 ),
             },
-            "jump-vert-se": {
-                spriteSheet: spritesheets["JumpVert/SE.png"],
+            "+y/+z/walk": {
+                spriteSheet: spritesheets["+y/+z/walk.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/SE.png"].sprites.length - 1,
+                    spritesheets["+y/+z/walk.png"].sprites.length,
                 ),
             },
-            "jump-vert-sw": {
-                spriteSheet: spritesheets["JumpVert/SW.png"],
+            "+y/+z/climb-over": {
+                spriteSheet: spritesheets["+y/+z/climb-over.png"],
                 looping: true,
                 indexes: createRange(
-                    spritesheets["JumpVert/SW.png"].sprites.length - 1,
+                    spritesheets["+y/+z/climb-over.png"].sprites.length,
                 ),
             },
         },
