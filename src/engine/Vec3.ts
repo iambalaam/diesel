@@ -1,6 +1,10 @@
 export class Vec3 {
     constructor(public x: number, public y: number, public z: number) {}
 
+    static get Zero() {
+        return new Vec3(0, 0, 0);
+    }
+
     clone() {
         return new Vec3(this.x, this.y, this.z);
     }
@@ -35,5 +39,13 @@ export class Vec3 {
 
     toString() {
         return `V3(${this.x}, ${this.y}, ${this.z})`;
+    }
+
+    round() {
+        return new Vec3(
+            Math.round(this.x),
+            Math.round(this.y),
+            Math.round(this.z),
+        );
     }
 }

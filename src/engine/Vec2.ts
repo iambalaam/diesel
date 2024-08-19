@@ -1,6 +1,10 @@
 export class Vec2 {
     constructor(public x: number, public y: number) {}
 
+    static get Zero() {
+        return new Vec2(0, 0);
+    }
+
     clone() {
         return new Vec2(this.x, this.y);
     }
@@ -35,5 +39,12 @@ export class Vec2 {
 
     toString() {
         return `V2(${this.x}, ${this.y})`;
+    }
+
+    round() {
+        return new Vec2(
+            Math.round(this.x),
+            Math.round(this.y),
+        );
     }
 }

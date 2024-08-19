@@ -1,6 +1,5 @@
 import { Actor } from "../engine/Actor.ts";
 import { AnimationStates, Animator } from "../engine/Animator.ts";
-import { Background } from "../engine/Background.ts";
 import { Engine } from "../engine/Engine.ts";
 import { SpriteRenderer } from "../engine/SpriteRenderer.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
@@ -27,6 +26,8 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "Idle/NW.png",
         "Idle/SE.png",
         "Idle/SW.png",
+        "ClimbUp/NE.png",
+        "ClimbUp/NW.png",
         "JumpVert/NE.png",
         "JumpVert/NW.png",
         "JumpVert/SE.png",
@@ -47,6 +48,8 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "Idle/NW.png": HTMLImageElement;
         "Idle/SE.png": HTMLImageElement;
         "Idle/SW.png": HTMLImageElement;
+        "ClimbUp/NE.png": HTMLImageElement;
+        "ClimbUp/NW.png": HTMLImageElement;
         "JumpVert/NE.png": HTMLImageElement;
         "JumpVert/NW.png": HTMLImageElement;
         "JumpVert/SE.png": HTMLImageElement;
@@ -77,6 +80,8 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "Idle/NW.png": Spritesheet;
         "Idle/SE.png": Spritesheet;
         "Idle/SW.png": Spritesheet;
+        "ClimbUp/NE.png": Spritesheet;
+        "ClimbUp/NW.png": Spritesheet;
         "JumpVert/NE.png": Spritesheet;
         "JumpVert/NW.png": Spritesheet;
         "JumpVert/SE.png": Spritesheet;
@@ -140,6 +145,20 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
                 looping: true,
                 indexes: createRange(
                     spritesheets["Idle/SW.png"].sprites.length,
+                ),
+            },
+            "climb-up-ne": {
+                spriteSheet: spritesheets["ClimbUp/NE.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["ClimbUp/NE.png"].sprites.length,
+                ),
+            },
+            "climb-up-nw": {
+                spriteSheet: spritesheets["ClimbUp/NW.png"],
+                looping: true,
+                indexes: createRange(
+                    spritesheets["ClimbUp/NW.png"].sprites.length,
                 ),
             },
             "jump-vert-ne": {
@@ -240,7 +259,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     new Engine(ctx, {
         onInit: (e, time) => {
             worldRenderer = e.createActor("world");
-            worldRenderer.position = new Vec3(0, 0, -1);
+            worldRenderer.position.translation = new Vec3(0, 0, -1);
             worldRenderer.renderer = new SpriteRenderer();
             worldRenderer.addBehaviour(new WorldRenderer(world, tileSheet));
 
@@ -248,7 +267,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
             robot.animator = new Animator(e, time, animStates);
             robot.renderer = new SpriteRenderer();
             robot.addBehaviour(new PlayerController(world));
-            robot.position = new Vec3(0, 0, 0);
+            robot.position.translation = new Vec3(0, 0, 0);
         },
         onEarlyRender: (e) => {
             // Background

@@ -1,19 +1,33 @@
 import { Animator } from "./Animator.ts";
-import { Background } from "./Background.ts";
 import { Behaviour } from "./Behaviour.ts";
 import { Time } from "./Engine.ts";
 import { RenderReq, SpriteRenderer } from "./SpriteRenderer.ts";
 import { Vec3 } from "./Vec3.ts";
 
+export interface Position {
+  translation: Vec3;
+  forwards: Vec3;
+  down: Vec3;
+}
+
+export const ZERO_POSITION = {
+  translation: Vec3.Zero,
+  forwards: Vec3.Zero,
+  down: Vec3.Zero,
+};
+
 export class Actor {
-  position: Vec3;
+  position: Position;
   animator?: Animator;
-  background?: Background;
   renderer?: SpriteRenderer;
   #behaviours: Behaviour[];
 
   constructor(public name: string) {
-    this.position = new Vec3(0, 0, 0);
+    this.position = {
+      translation: new Vec3(0, 0, 0),
+      forwards: new Vec3(0, -1, 0),
+      down: new Vec3(0, 0, -1),
+    };
     this.#behaviours = [];
   }
 
@@ -26,7 +40,6 @@ export class Actor {
     for (const behaviour of this.#behaviours) {
       behaviour.render(this, time);
     }
-    this.background?.render(this);
     this.animator?.render(this, time);
     return this.renderer?.render() || [];
   }

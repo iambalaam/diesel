@@ -1,13 +1,12 @@
-import { Actor } from "../engine/Actor.ts";
+import { Actor, Position, ZERO_POSITION } from "../engine/Actor.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
-import { Time } from "../engine/Engine.ts";
+import { MS, Time } from "../engine/Engine.ts";
 import { Input } from "../engine/Input.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
+import { Action, ClimbUp, Jump, Walk } from "./Action.ts";
 import { World } from "./World.ts";
 
-const WALK_SPEED = 0.001;
-const JUMP_SPEED = 0.00075;
 const DEAD_ZONE = 0.1;
 
 const NE = new Vec3(1, 0, 0);
@@ -21,38 +20,27 @@ const getCardinal = (v: Vec3) => {
   return "se";
 };
 
-type State = "idle" | "walk" | "jump-forward";
-type Pos = {
-  pos: Vec3;
-  forward: Vec3;
-  down: Vec3;
-};
+type State = "idle" | "walk" | "jump-forward" | "climb-up";
 
 export class PlayerController extends Behaviour {
   constructor(private world: World) {
     super();
   }
 
-  current: Pos = {
-    pos: new Vec3(0, 0, 0),
-    forward: new Vec3(0, -1, 0),
-    down: new Vec3(0, 0, -1),
-  };
-  target?: Pos = undefined;
-
+  current: Position = ZERO_POSITION;
   init(actor: Actor): void {
-    this.current.pos = actor.position.clone();
+    this.current = actor.position;
   }
 
   canJump(): boolean {
-    const currentBlock = this.current.pos;
+    const currentBlock = this.current.translation;
     const floor = currentBlock.add(this.current.down);
     if (!this.world.hasBlock(floor)) return false;
-    const forward = currentBlock.add(this.current.forward);
+    const forward = currentBlock.add(this.current.forwards);
     if (this.world.hasBlock(forward)) return false;
-    const forwardTwice = currentBlock.add(this.current.forward.scale(2));
+    const forwardTwice = currentBlock.add(this.current.forwards.scale(2));
     if (this.world.hasBlock(forwardTwice)) return false;
-    const landing = floor.add(this.current.forward.scale(2));
+    const landing = floor.add(this.current.forwards.scale(2));
     if (!this.world.hasBlock(landing)) return false;
     if (!this.world.isInsideWorld(landing)) return false;
 
@@ -60,7 +48,7 @@ export class PlayerController extends Behaviour {
   }
 
   canWalk(dir: Vec3): boolean {
-    const currentBlock = this.current.pos;
+    const currentBlock = this.current.translation;
     const floor = currentBlock.add(this.current.down);
     if (!this.world.hasBlock(floor)) return false;
     const landing = floor.add(dir);
@@ -73,9 +61,9 @@ export class PlayerController extends Behaviour {
   }
 
   canClimbUp(dir: Vec3): boolean {
-    if (!this.current.down.equals(new Vec3(0, 0, 1))) return false;
+    if (!this.current.down.equals(new Vec3(0, 0, -1))) return false;
     if (dir.z !== 0) return false;
-    const currentBlock = this.current.pos;
+    const currentBlock = this.current.translation;
     const floor = currentBlock.add(this.current.down);
     if (!this.world.hasBlock(floor)) return false;
     const landing = currentBlock.add(dir);
@@ -87,7 +75,7 @@ export class PlayerController extends Behaviour {
 
   canClimbOver(dir: Vec3) {
     if (this.current.down.z === 0) return false;
-    const currentBlock = this.current.pos;
+    const currentBlock = this.current.translation;
     const floor = currentBlock.add(this.current.down);
     if (!this.world.hasBlock(floor)) return false;
     const forward = currentBlock.add(dir);
@@ -103,7 +91,6 @@ export class PlayerController extends Behaviour {
   isWalking = false;
 
   state: State = "idle";
-  orientation = new Vec3(0, -1, 0);
 
   pollJumping(): boolean {
     return Input.Keyboard[" "] || !!Input.Gamepad.buttons[0];
@@ -136,67 +123,79 @@ export class PlayerController extends Behaviour {
     } else return new Vec3(0, 0, 0);
   }
 
+  currentAction?: Action;
   update(actor: Actor, time: Time): void {
     // Maybe complete last action
-    if (this.target) {
-      const distanceLeft = this.target.pos.subtract(actor.position);
-      if (distanceLeft.dot(this.orientation) <= 0) {
-        actor.position = this.target.pos;
-        this.current.pos = this.target.pos;
-        this.current.forward = this.target.forward;
-        this.current.down = this.target.down;
-        this.target = undefined;
-        this.isJumping = false;
-        this.isWalking = false;
-      }
+    if (
+      this.currentAction && time.time > this.currentAction.endTime
+    ) {
+      this.currentAction.finishAction(actor, time);
+      this.currentAction = undefined;
+      actor?.animator?.start(
+        `idle-${getCardinal(actor.position.forwards)}`,
+        time,
+      );
     }
 
-    // Maybe set new action
-    if (!this.target) {
-      let newState: State = this.state;
-      let newOrientation: Vec3 = this.orientation;
-
-      if (this.pollJumping()) {
-        if (this.canJump()) {
-          this.isJumping = true;
-          newState = "jump-forward";
-          this.target = {
-            pos: actor.position.add(this.orientation.scale(2)),
-            down: this.current.down,
-            forward: this.current.forward,
-          };
-        }
+    // Update current action
+    if (this.currentAction) {
+      this.currentAction.updateAction(actor, time);
+    } // Maybe set new action
+    else {
+      if (this.pollJumping() && this.canJump()) {
+        console.log("start jump");
+        const jump = new Jump();
+        jump.startAction(
+          actor.position,
+          {
+            translation: actor.position.translation.add(
+              actor.position.forwards.scale(2),
+            ),
+            forwards: actor.position.forwards,
+            down: actor.position.down,
+          },
+          actor,
+          time,
+        );
+        this.currentAction = jump;
+        actor?.animator?.start(
+          `jump-forward-${getCardinal(actor.position.forwards)}`,
+          time,
+        );
       } else {
         const orthInput = this.isoToWorldSpace(this.pollIsometricInput());
-        const walking = orthInput.sqrMag() > 0 && this.canWalk(orthInput);
-        if (walking) {
-          this.isWalking = true;
-          newState = "walk";
-          newOrientation = orthInput;
-          this.target = {
-            pos: actor.position.add(orthInput),
-            down: this.current.down,
-            forward: orthInput,
-          };
-        } else {
-          newState = "idle";
+        if (orthInput.sqrMag() === 0) {
+          // newState = "idle";
+        } else if (this.canWalk(orthInput)) {
+          const walk = new Walk();
+          walk.startAction(
+            actor.position,
+            {
+              translation: actor.position.translation.add(orthInput),
+              forwards: orthInput,
+              down: actor.position.down,
+            },
+            actor,
+            time,
+          );
+          this.currentAction = walk;
+          actor?.animator?.start(`walk-${getCardinal(orthInput)}`, time);
+        } else if (this.canClimbUp(orthInput)) {
+          const climbUp = new ClimbUp();
+          climbUp.startAction(
+            actor.position,
+            {
+              translation: actor.position.translation,
+              down: actor.position.forwards,
+              forwards: actor.position.down.scale(-1),
+            },
+            actor,
+            time,
+          );
+          this.currentAction = climbUp;
+          actor?.animator?.start(`climb-up-${getCardinal(orthInput)}`, time);
         }
       }
-
-      if (!newOrientation.equals(this.orientation) || newState !== this.state) {
-        this.state = newState;
-        this.orientation = newOrientation;
-        const newCycle = `${newState}-${getCardinal(newOrientation)}`;
-        actor.animator?.start(newCycle, time);
-      }
-    }
-
-    // Set state
-    if (this.target) {
-      const speed = this.isJumping ? JUMP_SPEED : WALK_SPEED;
-      actor.position = actor.position.add(
-        this.orientation.scale(speed * time.deltaTime)
-      );
     }
   }
 }
