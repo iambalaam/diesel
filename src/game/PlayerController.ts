@@ -1,6 +1,6 @@
 import { Actor, Position, ZERO_POSITION } from "../engine/Actor.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
-import { MS, Time } from "../engine/Engine.ts";
+import { Time } from "../engine/Engine.ts";
 import { Input } from "../engine/Input.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
@@ -9,15 +9,19 @@ import { World } from "./World.ts";
 
 const DEAD_ZONE = 0.1;
 
-const NE = new Vec3(1, 0, 0);
-const SE = new Vec3(0, -1, 0);
-const SW = new Vec3(-1, 0, 0);
-const NW = new Vec3(0, 1, 0);
-const getCardinal = (v: Vec3) => {
-  if (v.equals(NE)) return "ne";
-  if (v.equals(NW)) return "nw";
-  if (v.equals(SW)) return "sw";
-  return "se";
+const getVecPrefix = (v: Vec3) => {
+  let prefix = "";
+  if (v.x > 0) prefix += "+x";
+  if (v.x < 0) prefix += "-x";
+  if (v.y > 0) prefix += "+y";
+  if (v.y < 0) prefix += "-y";
+  if (v.z > 0) prefix += "+z";
+  if (v.z < 0) prefix += "-z";
+  return prefix;
+};
+
+const getPosPrefix = (pos: Position) => {
+  return `${getVecPrefix(pos.down)}/${getVecPrefix(pos.forwards)}`;
 };
 
 type State = "idle" | "walk" | "jump-forward" | "climb-up";
@@ -131,10 +135,7 @@ export class PlayerController extends Behaviour {
     ) {
       this.currentAction.finishAction(actor, time);
       this.currentAction = undefined;
-      actor?.animator?.start(
-        `idle-${getCardinal(actor.position.forwards)}`,
-        time,
-      );
+      actor?.animator?.start(`${getPosPrefix(actor.position)}/idle`, time);
     }
 
     // Update current action
@@ -143,7 +144,6 @@ export class PlayerController extends Behaviour {
     } // Maybe set new action
     else {
       if (this.pollJumping() && this.canJump()) {
-        console.log("start jump");
         const jump = new Jump();
         jump.startAction(
           actor.position,
@@ -159,7 +159,7 @@ export class PlayerController extends Behaviour {
         );
         this.currentAction = jump;
         actor?.animator?.start(
-          `jump-forward-${getCardinal(actor.position.forwards)}`,
+          `${getPosPrefix(actor.position)}/jump`,
           time,
         );
       } else {
@@ -168,32 +168,37 @@ export class PlayerController extends Behaviour {
           // newState = "idle";
         } else if (this.canWalk(orthInput)) {
           const walk = new Walk();
+          const targetPos = {
+            translation: actor.position.translation.add(orthInput),
+            forwards: orthInput,
+            down: actor.position.down,
+          };
           walk.startAction(
             actor.position,
-            {
-              translation: actor.position.translation.add(orthInput),
-              forwards: orthInput,
-              down: actor.position.down,
-            },
+            targetPos,
             actor,
             time,
           );
           this.currentAction = walk;
-          actor?.animator?.start(`walk-${getCardinal(orthInput)}`, time);
+          actor?.animator?.start(`${getPosPrefix(targetPos)}/walk`, time);
         } else if (this.canClimbUp(orthInput)) {
+          const targetPos = {
+            translation: actor.position.translation,
+            down: actor.position.forwards,
+            forwards: actor.position.down.scale(-1),
+          };
           const climbUp = new ClimbUp();
           climbUp.startAction(
             actor.position,
-            {
-              translation: actor.position.translation,
-              down: actor.position.forwards,
-              forwards: actor.position.down.scale(-1),
-            },
+            targetPos,
             actor,
             time,
           );
           this.currentAction = climbUp;
-          actor?.animator?.start(`climb-up-${getCardinal(orthInput)}`, time);
+          actor?.animator?.start(
+            `${getPosPrefix(targetPos)}/climb-up`,
+            time,
+          );
         }
       }
     }
