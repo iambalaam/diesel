@@ -67,6 +67,7 @@ export class PlayerController extends Behaviour {
   canClimbUp(dir: Vec3): boolean {
     if (!this.current.down.equals(new Vec3(0, 0, -1))) return false;
     if (dir.z !== 0) return false;
+    if (dir.x < 0 || dir.y < 0) return false;
     const currentBlock = this.current.translation;
     const floor = currentBlock.add(this.current.down);
     if (!this.world.hasBlock(floor)) return false;
@@ -115,16 +116,19 @@ export class PlayerController extends Behaviour {
     return isoInput;
   }
 
-  isoToWorldSpace(iso: Vec2): Vec3 {
-    if (iso.x > 0 && iso.y < 0) {
-      return new Vec3(1, 0, 0);
-    } else if (iso.x < 0 && iso.y < 0) {
-      return new Vec3(0, 1, 0);
-    } else if (iso.x > 0 && iso.y > 0) {
-      return new Vec3(0, -1, 0);
-    } else if (iso.x < 0 && iso.y > 0) {
-      return new Vec3(-1, 0, 0);
-    } else return new Vec3(0, 0, 0);
+  isoToWorldSpace(iso: Vec2, grounded: boolean): Vec3 {
+    if (grounded) {
+      // ISO Controls on the ground
+      if (iso.x > 0 && iso.y < 0) return new Vec3(1, 0, 0);
+      if (iso.x < 0 && iso.y < 0) return new Vec3(0, 1, 0);
+      if (iso.x > 0 && iso.y > 0) return new Vec3(0, -1, 0);
+      if (iso.x < 0 && iso.y > 0) return new Vec3(-1, 0, 0);
+      return new Vec3(0, 0, 0);
+    } else {
+      if (iso.y < 0) return new Vec3(0, 0, 1);
+      if (iso.y > 0) return new Vec3(0, 0, -1);
+      return new Vec3(0, 0, 0);
+    }
   }
 
   currentAction?: Action;
@@ -141,8 +145,10 @@ export class PlayerController extends Behaviour {
     // Update current action
     if (this.currentAction) {
       this.currentAction.updateAction(actor, time);
-    } // Maybe set new action
-    else {
+    }
+
+    // Maybe set new action
+    if (!this.currentAction) {
       if (this.pollJumping() && this.canJump()) {
         const jump = new Jump();
         jump.startAction(
@@ -163,7 +169,11 @@ export class PlayerController extends Behaviour {
           time,
         );
       } else {
-        const orthInput = this.isoToWorldSpace(this.pollIsometricInput());
+        const grounded = actor.position.down.z === -1;
+        const orthInput = this.isoToWorldSpace(
+          this.pollIsometricInput(),
+          grounded,
+        );
         if (orthInput.sqrMag() === 0) {
           // newState = "idle";
         } else if (this.canWalk(orthInput)) {

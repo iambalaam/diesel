@@ -38,7 +38,7 @@ export class World {
     for (let x = 0; x < size.x; x++) {
       for (let y = 0; y < size.y; y++) {
         for (let z = 0; z < size.z; z++) {
-          this.addBlock(position, block);
+          this.addBlock(position.add(new Vec3(x, y, z)), block);
         }
       }
     }

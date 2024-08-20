@@ -299,7 +299,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     let robot: Actor;
     let worldRenderer: Actor;
     const world = new World(new Vec2(5, 5));
-    world.addBox(new Vec3(2, 2, 0), new Vec3(1, 1, 1), {
+    world.addBox(new Vec3(2, 2, 0), new Vec3(1, 1, 3), {
         isClimbable: true,
         spriteIndex: 0,
     });
