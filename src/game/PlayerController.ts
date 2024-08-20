@@ -4,7 +4,7 @@ import { Time } from "../engine/Engine.ts";
 import { Input } from "../engine/Input.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
-import { Action, ClimbUp, Jump, Walk } from "./Action.ts";
+import { Action, ClimbOver, ClimbUp, Jump, Walk } from "./Action.ts";
 import { World } from "./World.ts";
 
 const DEAD_ZONE = 0.1;
@@ -31,29 +31,24 @@ export class PlayerController extends Behaviour {
     super();
   }
 
-  current: Position = ZERO_POSITION;
-  init(actor: Actor): void {
-    this.current = actor.position;
-  }
-
-  canJump(): boolean {
-    const currentBlock = this.current.translation;
-    const floor = currentBlock.add(this.current.down);
+  canJump(p: Position): boolean {
+    const currentBlock = p.translation;
+    const floor = currentBlock.add(p.down);
     if (!this.world.hasBlock(floor)) return false;
-    const forward = currentBlock.add(this.current.forwards);
+    const forward = currentBlock.add(p.forwards);
     if (this.world.hasBlock(forward)) return false;
-    const forwardTwice = currentBlock.add(this.current.forwards.scale(2));
+    const forwardTwice = currentBlock.add(p.forwards.scale(2));
     if (this.world.hasBlock(forwardTwice)) return false;
-    const landing = floor.add(this.current.forwards.scale(2));
+    const landing = floor.add(p.forwards.scale(2));
     if (!this.world.hasBlock(landing)) return false;
     if (!this.world.isInsideWorld(landing)) return false;
 
     return true;
   }
 
-  canWalk(dir: Vec3): boolean {
-    const currentBlock = this.current.translation;
-    const floor = currentBlock.add(this.current.down);
+  canWalk(p: Position, dir: Vec3): boolean {
+    const currentBlock = p.translation;
+    const floor = currentBlock.add(p.down);
     if (!this.world.hasBlock(floor)) return false;
     const landing = floor.add(dir);
     if (!this.world.hasBlock(landing)) return false;
@@ -64,12 +59,12 @@ export class PlayerController extends Behaviour {
     return true;
   }
 
-  canClimbUp(dir: Vec3): boolean {
-    if (!this.current.down.equals(new Vec3(0, 0, -1))) return false;
+  canClimbUp(p: Position, dir: Vec3): boolean {
+    if (!p.down.equals(new Vec3(0, 0, -1))) return false;
     if (dir.z !== 0) return false;
     if (dir.x < 0 || dir.y < 0) return false;
-    const currentBlock = this.current.translation;
-    const floor = currentBlock.add(this.current.down);
+    const currentBlock = p.translation;
+    const floor = currentBlock.add(p.down);
     if (!this.world.hasBlock(floor)) return false;
     const landing = currentBlock.add(dir);
     if (!this.world.hasBlock(landing)) return false;
@@ -78,14 +73,15 @@ export class PlayerController extends Behaviour {
     return true;
   }
 
-  canClimbOver(dir: Vec3) {
-    if (this.current.down.z === 0) return false;
-    const currentBlock = this.current.translation;
-    const floor = currentBlock.add(this.current.down);
+  canClimbOver(p: Position, dir: Vec3) {
+    if (p.down.z !== 0) return false;
+    if (dir.z !== 1) return false;
+    const currentBlock = p.translation;
+    const floor = currentBlock.add(p.down);
     if (!this.world.hasBlock(floor)) return false;
     const forward = currentBlock.add(dir);
     if (this.world.hasBlock(forward)) return false;
-    const around = forward.add(this.current.down);
+    const around = forward.add(p.down);
     if (this.world.hasBlock(around)) return false;
     if (!this.world.isInsideWorld(floor)) return false;
 
@@ -149,7 +145,7 @@ export class PlayerController extends Behaviour {
 
     // Maybe set new action
     if (!this.currentAction) {
-      if (this.pollJumping() && this.canJump()) {
+      if (this.pollJumping() && this.canJump(actor.position)) {
         const jump = new Jump();
         jump.startAction(
           actor.position,
@@ -176,7 +172,7 @@ export class PlayerController extends Behaviour {
         );
         if (orthInput.sqrMag() === 0) {
           // newState = "idle";
-        } else if (this.canWalk(orthInput)) {
+        } else if (this.canWalk(actor.position, orthInput)) {
           const walk = new Walk();
           const targetPos = {
             translation: actor.position.translation.add(orthInput),
@@ -191,7 +187,7 @@ export class PlayerController extends Behaviour {
           );
           this.currentAction = walk;
           actor?.animator?.start(`${getPosPrefix(targetPos)}/walk`, time);
-        } else if (this.canClimbUp(orthInput)) {
+        } else if (this.canClimbUp(actor.position, orthInput)) {
           actor.position.forwards = orthInput;
           const targetPos = {
             translation: actor.position.translation,
@@ -209,6 +205,21 @@ export class PlayerController extends Behaviour {
 
           actor?.animator?.start(
             `${getPosPrefix(actor.position)}/climb-up`,
+            time,
+          );
+        } else if (this.canClimbOver(actor.position, orthInput)) {
+          const targetPos = {
+            translation: actor.position.translation
+              .add(orthInput)
+              .add(actor.position.down),
+            down: actor.position.forwards.scale(-1),
+            forwards: actor.position.down,
+          };
+          const climbOver = new ClimbOver();
+          climbOver.startAction(actor.position, targetPos, actor, time);
+          this.currentAction = climbOver;
+          actor?.animator?.start(
+            `${getPosPrefix(actor.position)}/climb-over`,
             time,
           );
         }

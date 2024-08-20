@@ -140,3 +140,28 @@ export class ClimbUp extends Action {
         actor.position.forwards = start.forwards;
     }
 }
+export class ClimbOver extends Action {
+    get duration() {
+        return SPRITE_MS * 69;
+    }
+    startAction(
+        _start: Position,
+        end: Position,
+        _actor: Actor,
+        time: Time,
+    ): void {
+        this.startTime = time.time;
+        this.endTime = this.startTime + this.duration;
+        this.target = {
+            translation: end.translation.clone(),
+            forwards: end.forwards.clone(),
+            down: end.down.clone(),
+        };
+    }
+    updateAction(actor: Actor, time: Time): void {
+        // Do not move
+    }
+    finishAction(actor: Actor, time: Time): void {
+        actor.position = this.target;
+    }
+}

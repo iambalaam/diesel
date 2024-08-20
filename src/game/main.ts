@@ -123,6 +123,32 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
 
     Object.entries(assets).forEach(([name, img]) => {
         if (name.startsWith("tiles")) return;
+
+        if (name === "+y/+z/climb-over.png") {
+            (spritesheets as any)[name] = new Spritesheet(img, {
+                spriteSize: new Vec2(192, 192),
+                spriteAnchor: new Vec2(128, 200),
+                rows: true,
+            });
+            return;
+        }
+        if (name === "+x/+z/climb-over.png") {
+            (spritesheets as any)[name] = new Spritesheet(img, {
+                spriteSize: new Vec2(192, 192),
+                spriteAnchor: new Vec2(64, 200),
+                rows: true,
+            });
+            return;
+        }
+        if (name.includes("+z/idle")) {
+            (spritesheets as any)[name] = new Spritesheet(img, {
+                spriteSize: new Vec2(128, 128),
+                spriteAnchor: new Vec2(64, 132),
+                rows: true,
+            });
+            return;
+        }
+
         (spritesheets as any)[name] = new Spritesheet(img, {
             spriteSize: new Vec2(128, 128),
             spriteAnchor: new Vec2(64, 128),
@@ -299,7 +325,11 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     let robot: Actor;
     let worldRenderer: Actor;
     const world = new World(new Vec2(5, 5));
-    world.addBox(new Vec3(2, 2, 0), new Vec3(1, 1, 3), {
+    world.addBox(new Vec3(1, 4, 0), new Vec3(2, 1, 3), {
+        isClimbable: true,
+        spriteIndex: 0,
+    });
+    world.addBox(new Vec3(4, 1, 0), new Vec3(1, 4, 3), {
         isClimbable: true,
         spriteIndex: 0,
     });
