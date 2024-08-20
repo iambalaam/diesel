@@ -325,13 +325,26 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     let robot: Actor;
     let worldRenderer: Actor;
     const world = new World(new Vec2(5, 5));
-    world.addBox(new Vec3(1, 4, 0), new Vec3(2, 1, 3), {
-        isClimbable: false,
-        spriteIndex: 2,
+    // climbable start
+    world.addBox(new Vec3(1, 1, 0), new Vec3(2, 2, 1), {
+        isClimbable: true,
+        spriteIndex: 1,
     });
-    world.addBox(new Vec3(4, 1, 0), new Vec3(1, 4, 3), {
+
+    // first building to jump to
+    world.addBox(new Vec3(1, 4, 0), new Vec3(2, 1, 1), {
         isClimbable: false,
         spriteIndex: 3,
+    });
+    world.addBox(new Vec3(2, 4, 1), new Vec3(1, 1, 1), {
+        isClimbable: true,
+        spriteIndex: 5,
+    });
+
+    // final tower
+    world.addBox(new Vec3(4, 4, 0), new Vec3(1, 1, 2), {
+        isClimbable: false,
+        spriteIndex: 2,
     });
 
     new Engine(ctx, {
