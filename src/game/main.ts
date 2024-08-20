@@ -10,8 +10,8 @@ import { PlayerController } from "./PlayerController.ts";
 import { World } from "./World.ts";
 import { WorldRenderer } from "./WorldRenderer.ts";
 
-export const CANVAS_WIDTH = self.innerWidth;
-export const CANVAS_HEIGHT = self.innerHeight;
+export const CANVAS_WIDTH = 1280;
+export const CANVAS_HEIGHT = 720;
 const canvas = document.getElementsByTagName("canvas")[0];
 canvas.width = CANVAS_WIDTH;
 canvas.height = CANVAS_HEIGHT;
