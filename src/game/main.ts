@@ -387,8 +387,9 @@ const createBoomerang = (half: number) => {
             robot.position.translation = new Vec3(0, 0, 0);
 
             const goal = e.createActor("goal");
+            goal.renderer = new SpriteRenderer();
             goal.position.translation = new Vec3(4, 4, 2);
-            goal.addBehaviour(new Goal(robot));
+            goal.addBehaviour(new Goal(robot, tileSheet));
         },
         onEarlyRender: (e) => {
             // Background
