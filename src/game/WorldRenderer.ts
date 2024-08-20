@@ -22,7 +22,11 @@ export class WorldRenderer extends Behaviour {
                 for (let z = -1; z < this.world.grid[x][y].length; z++) {
                     const block = this.world.grid[x][y][z];
                     if (block) {
-                        renderer.renderSprite(this.tiles, 0, new Vec3(x, y, z));
+                        renderer.renderSprite(
+                            this.tiles,
+                            block.spriteIndex,
+                            new Vec3(x, y, z),
+                        );
                     }
                 }
             }

@@ -47,11 +47,13 @@ export class PlayerController extends Behaviour {
   }
 
   canWalk(p: Position, dir: Vec3): boolean {
+    if (dir.equals(new Vec3(0, 0, -1))) return false;
     const currentBlock = p.translation;
     const floor = currentBlock.add(p.down);
     if (!this.world.hasBlock(floor)) return false;
     const landing = floor.add(dir);
     if (!this.world.hasBlock(landing)) return false;
+    if ((p.down.z !== -1) && !this.world.isClimbable(landing)) return false;
     const forward = currentBlock.add(dir);
     if (this.world.hasBlock(forward)) return false;
     if (!this.world.isInsideWorld(landing)) return false;
@@ -69,6 +71,7 @@ export class PlayerController extends Behaviour {
     const landing = currentBlock.add(dir);
     if (!this.world.hasBlock(landing)) return false;
     if (!this.world.isInsideWorld(landing)) return false;
+    if (!this.world.isClimbable(landing)) return false;
 
     return true;
   }

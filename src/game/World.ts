@@ -22,6 +22,10 @@ export class World {
     return v.x >= 0 && v.x < this.size.x && v.y >= 0 && v.y < this.size.y;
   }
 
+  isClimbable(v: Vec3) {
+    return this.grid[v.x][v.y][v.z].isClimbable;
+  }
+
   addBlock(position: Vec3, block: Block) {
     if (!this.isInsideWorld(position)) return;
 
@@ -47,4 +51,6 @@ export class World {
   hasBlock(v: Vec3) {
     return this.grid[v.x]?.[v.y]?.[v.z] !== undefined;
   }
+}
+{
 }

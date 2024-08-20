@@ -326,12 +326,12 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
     let worldRenderer: Actor;
     const world = new World(new Vec2(5, 5));
     world.addBox(new Vec3(1, 4, 0), new Vec3(2, 1, 3), {
-        isClimbable: true,
-        spriteIndex: 0,
+        isClimbable: false,
+        spriteIndex: 2,
     });
     world.addBox(new Vec3(4, 1, 0), new Vec3(1, 4, 3), {
-        isClimbable: true,
-        spriteIndex: 0,
+        isClimbable: false,
+        spriteIndex: 3,
     });
 
     new Engine(ctx, {
