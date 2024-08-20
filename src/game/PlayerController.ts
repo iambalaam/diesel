@@ -132,6 +132,7 @@ export class PlayerController extends Behaviour {
 
   currentAction?: Action;
   update(actor: Actor, time: Time): void {
+    if (!this.enabled) return;
     // Maybe complete last action
     if (
       this.currentAction && time.time > this.currentAction.endTime

@@ -5,6 +5,7 @@ import { SpriteRenderer } from "../engine/SpriteRenderer.ts";
 import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
+import { Goal } from "./Goal.ts";
 import { PlayerController } from "./PlayerController.ts";
 import { World } from "./World.ts";
 import { WorldRenderer } from "./WorldRenderer.ts";
@@ -18,6 +19,11 @@ const ctx = canvas.getContext("2d")!;
 ctx.imageSmoothingEnabled = false;
 
 const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
+const createBoomerang = (half: number) => {
+    const fwd = createRange(half).slice(0, -1);
+    const bkwd = createRange(half).reverse();
+    return [...fwd, ...bkwd];
+};
 
 (async () => {
     const assetPaths = [
@@ -35,6 +41,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/-y/idle.png",
         "-z/-y/walk.png",
         "-z/-y/jump.png",
+        "-z/-y/win.png",
 
         "-z/+y/idle.png",
         "-z/+y/walk.png",
@@ -65,6 +72,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/-y/idle.png": HTMLImageElement;
         "-z/-y/walk.png": HTMLImageElement;
         "-z/-y/jump.png": HTMLImageElement;
+        "-z/-y/win.png": HTMLImageElement;
 
         "-z/+y/idle.png": HTMLImageElement;
         "-z/+y/walk.png": HTMLImageElement;
@@ -106,6 +114,7 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
         "-z/-y/idle.png": Spritesheet;
         "-z/-y/walk.png": Spritesheet;
         "-z/-y/jump.png": Spritesheet;
+        "-z/-y/win.png": Spritesheet;
 
         "-z/+y/idle.png": Spritesheet;
         "-z/+y/walk.png": Spritesheet;
@@ -132,10 +141,19 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
             });
             return;
         }
+
         if (name === "+x/+z/climb-over.png") {
             (spritesheets as any)[name] = new Spritesheet(img, {
                 spriteSize: new Vec2(192, 192),
                 spriteAnchor: new Vec2(64, 200),
+                rows: true,
+            });
+            return;
+        }
+        if (name === "-z/-y/win.png") {
+            (spritesheets as any)[name] = new Spritesheet(img, {
+                spriteSize: new Vec2(128, 128),
+                spriteAnchor: new Vec2(64, 128),
                 rows: true,
             });
             return;
@@ -244,6 +262,14 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
                 indexes: createRange(
                     spritesheets["-z/-y/jump.png"].sprites.length,
                 ),
+            },
+
+            "-z/-y/win": {
+                spriteSheet: spritesheets["-z/-y/win.png"],
+                looping: true,
+                indexes: createBoomerang(
+                    spritesheets["-z/-y/win.png"].sprites.length - 3,
+                ).map((index) => index + 2),
             },
 
             //
@@ -359,6 +385,10 @@ const createRange = (n: number) => new Array(n).fill(0).map((_, i) => i);
             robot.renderer = new SpriteRenderer();
             robot.addBehaviour(new PlayerController(world));
             robot.position.translation = new Vec3(0, 0, 0);
+
+            const goal = e.createActor("goal");
+            goal.position.translation = new Vec3(4, 4, 2);
+            goal.addBehaviour(new Goal(robot));
         },
         onEarlyRender: (e) => {
             // Background
