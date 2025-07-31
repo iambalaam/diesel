@@ -13,7 +13,7 @@ export class WorldRenderer extends Behaviour {
         super();
     }
 
-    render(actor: Actor, _time: Time): void {
+    override render(actor: Actor, _time: Time): void {
         const { renderer } = actor;
         if (!renderer) return;
 

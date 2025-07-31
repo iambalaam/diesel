@@ -7,5 +7,8 @@
   "tasks": {
     "dev": "deno run --watch main.ts",
     "build": "deno run --watch build.ts"
+  },
+  "fmt": {
+    "indentWidth": 4
   }
 }
