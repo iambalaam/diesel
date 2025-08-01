@@ -103,11 +103,10 @@ new Engine(ctx, {
                     pile.position.translation = pos;
                     pile.addBehaviour(new Pile(item));
                     pile.renderer = new SpriteRenderer();
+                    return pile;
                 });
                 actor.addBehaviour(conveyor);
-                if (i === 0) {
-                    conveyor.setItem(0);
-                }
+                conveyor.setItem(0);
             },
         );
     },

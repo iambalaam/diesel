@@ -6,6 +6,7 @@ import { ConveyorItem } from "./Conveyor.ts";
 import { conveyorItems } from "./main.ts";
 
 const ITEM_HEIGHT = 0.1;
+const MAX_ITEMS = 5;
 
 export class Pile extends Behaviour {
     private items: ConveyorItem[];
@@ -17,8 +18,13 @@ export class Pile extends Behaviour {
 
     getItems = () => [...this.items];
 
-    addItem(item: ConveyorItem) {
-        this.items.push(item);
+    addItem(item: ConveyorItem): boolean {
+        if (this.items.length < MAX_ITEMS) {
+            this.items.push(item);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     override render(actor: Actor, _time: Time): void {
