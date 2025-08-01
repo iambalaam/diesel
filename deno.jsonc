@@ -1,14 +1,38 @@
 {
-  "compilerOptions": {
-    "lib": [
-      "deno.window","dom", "dom.iterable"
-    ]
-  },
-  "tasks": {
-    "dev": "deno run --watch main.ts",
-    "build": "deno run --watch build.ts"
-  },
-  "fmt": {
-    "indentWidth": 4
-  }
+    "compilerOptions": {
+        "lib": [
+            "deno.window",
+            "dom",
+            "dom.iterable"
+        ]
+    },
+    "tasks": {
+        "clean": "mkdir -p dist && rm -rf dist/*",
+        "copy:index": {
+            "command": "cp index.html dist/index.html && cp index.css dist/index.css",
+            "dependencies": ["clean"]
+        },
+        "copy:static": {
+            "command": "mkdir -p dist/static && cp -R static/* dist/static/",
+            "dependencies": ["clean"]
+        },
+        "bundle": {
+            "command": "deno bundle --platform browser src/game/main.ts --output dist/main.js",
+            "dependencies": ["clean"]
+        },
+        "bundle:dev": {
+            "command": "deno bundle --watch --platform browser src/game/main.ts --output dist/main.js",
+            "dependencies": ["clean"]
+        },
+        "build": {
+            "dependencies": ["clean", "copy:index", "copy:static", "bundle"]
+        },
+        "serve:dev": {
+            "command": "deno run -A npm:serve dist",
+            "dependencies": ["copy:index", "copy:static"]
+        }
+    },
+    "fmt": {
+        "indentWidth": 4
+    }
 }
