@@ -13,7 +13,7 @@
             "dependencies": ["clean"]
         },
         "copy:static": {
-            "command": "mkdir -p dist/static && cp -R static/* dist/static/",
+            "command": "mkdir -p dist/static && cp -R src/game/static/* dist/static/",
             "dependencies": ["clean"]
         },
         "bundle": {

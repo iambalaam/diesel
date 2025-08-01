@@ -20,7 +20,7 @@ export class Actor {
     position: Position;
     animator?: Animator;
     renderer?: SpriteRenderer;
-    #behaviours: Behaviour[];
+    private behaviours: Behaviour[];
 
     constructor(public name: string) {
         this.position = {
@@ -28,16 +28,22 @@ export class Actor {
             forwards: new Vec3(0, -1, 0),
             down: new Vec3(0, 0, -1),
         };
-        this.#behaviours = [];
+        this.behaviours = [];
     }
 
     addBehaviour(behaviour: Behaviour) {
-        this.#behaviours.push(behaviour);
+        this.behaviours.push(behaviour);
         behaviour.init(this);
     }
 
+    getBehaviour<T extends Behaviour>(
+        ctr: new (...args: any[]) => T,
+    ): T | undefined {
+        return this.behaviours.find((b): b is T => b instanceof ctr);
+    }
+
     render(time: Time): RenderReq[] {
-        for (const behaviour of this.#behaviours) {
+        for (const behaviour of this.behaviours) {
             behaviour.render(this, time);
         }
         this.animator?.render(this, time);
@@ -45,7 +51,7 @@ export class Actor {
     }
 
     update(time: Time) {
-        for (const behaviour of this.#behaviours) {
+        for (const behaviour of this.behaviours) {
             behaviour.update(this, time);
         }
     }

@@ -12,7 +12,7 @@ export class SpriteRenderer {
     renderReqs: RenderReq[] = [];
 
     renderSprite(sheet: Spritesheet, index: number, world: Vec3) {
-        const zIndex = world.z - world.x - world.y;
+        const zIndex = 2 * world.z - world.x - world.y;
         const screen = worldToScreen(world);
         const spriteLoc = sheet.sprites[index];
         if (!spriteLoc) return;

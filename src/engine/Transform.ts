@@ -4,9 +4,9 @@ import { Vec3 } from "./Vec3.ts";
 // TODO Fix hard-code
 const bottom = new Vec2(1280 / 2, 720);
 
-const xDir = new Vec2(64, -32);
-const yDir = new Vec2(-64, -32);
-const zDir = new Vec2(0, -64);
+const xDir = new Vec2(96, -48);
+const yDir = new Vec2(-96, -48);
+const zDir = new Vec2(0, -96);
 
 export function worldToScreen(world: Vec3): Vec2 {
     return bottom
