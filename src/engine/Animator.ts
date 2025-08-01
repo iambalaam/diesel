@@ -35,13 +35,18 @@ export class Animator extends Component {
         this.#states = states;
     }
 
-    start(name: string, time: Time) {
-        console.debug(`starting: ${name}`);
+    startCycle(name: string, time: Time) {
         const cycle = this.#states.cycles[name];
         if (!cycle) throw new Error(`No cycle: ${name}`);
         this.#currentCycle = cycle;
         // This keeps all animations in phase
         this.#currentCycleStart = time.time - (time.time % SPRITE_MS);
+    }
+
+    joinCycle(name: string) {
+        const cycle = this.#states.cycles[name];
+        if (!cycle) throw new Error(`No cycle: ${name}`);
+        this.#currentCycle = cycle;
     }
 
     render(actor: Actor, time: Time) {
@@ -62,7 +67,7 @@ export class Animator extends Component {
             cycleIndex = frameNumber;
         } else if (cycle.end) {
             // Go to next cycle
-            this.start(cycle.end, time);
+            this.startCycle(cycle.end, time);
             cycleIndex = 0;
             cycle = this.#currentCycle;
         } else if (!cycle.looping) {

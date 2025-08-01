@@ -2,6 +2,7 @@ import { Actor } from "../engine/Actor.ts";
 import { SPRITE_MS } from "../engine/Animator.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
+import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Pile } from "./Pile.ts";
@@ -19,6 +20,14 @@ function getConveyorAt(pos: Vec2) {
 
 export type ConveyorItem = 0 | 1;
 
+const getCardinal = (dir: Vec3) => {
+    if (dir.x === 1 && dir.y === 0) return "ne";
+    if (dir.x === 0 && dir.y === -1) return "se";
+    if (dir.x === -1 && dir.y === 0) return "sw";
+    if (dir.x === 0 && dir.y === 1) return "nw";
+    throw new Error(`Could not find cardinal for ${dir}`);
+};
+
 export class Conveyor extends Behaviour {
     private currentProgress = 0;
     private currentItem?: ConveyorItem = undefined;
@@ -32,6 +41,10 @@ export class Conveyor extends Behaviour {
 
     override init(actor: Actor): void {
         ALL_CARRIERS.push(actor);
+        actor.animator?.startCycle(getCardinal(actor.position.forwards), {
+            time: 0,
+            deltaTime: 0,
+        });
     }
 
     override update(actor: Actor, time: Time): void {
@@ -75,6 +88,10 @@ export class Conveyor extends Behaviour {
 
     override render(actor: Actor, _time: Time): void {
         const { renderer, position } = actor;
+
+        const cardinal = getCardinal(actor.position.forwards);
+        actor.animator?.joinCycle(cardinal);
+
         if (this.currentItem !== undefined && renderer) {
             renderer.renderSprite(
                 conveyorItems,

@@ -85,15 +85,38 @@ new Engine(ctx, {
             // { pos: new Vec3(0, 1, 0), dir: new Vec3(0, -1, 0) },
         ].forEach(
             ({ pos, dir }, i) => {
-                const cardinal = dir2Cardinal(dir);
                 const actor = e.createActor(`belt-${i}`);
-                const sheet = sheets[`/static/Belt_${cardinal}.png`];
                 actor.animator = new Animator(e, time, {
                     cycles: {
                         idle: {
                             looping: true,
-                            spriteSheet: sheet,
-                            indexes: sheet.sprites.map((_, i) => i),
+                            spriteSheet: sheets["/static/Belt_NE.png"],
+                            indexes: sheets["/static/Belt_NE.png"]
+                                .sprites.map((_, i) => i),
+                        },
+                        ne: {
+                            looping: true,
+                            spriteSheet: sheets["/static/Belt_NE.png"],
+                            indexes: sheets["/static/Belt_NE.png"]
+                                .sprites.map((_, i) => i),
+                        },
+                        se: {
+                            looping: true,
+                            spriteSheet: sheets["/static/Belt_SE.png"],
+                            indexes: sheets["/static/Belt_SE.png"]
+                                .sprites.map((_, i) => i),
+                        },
+                        sw: {
+                            looping: true,
+                            spriteSheet: sheets["/static/Belt_SW.png"],
+                            indexes: sheets["/static/Belt_SW.png"]
+                                .sprites.map((_, i) => i),
+                        },
+                        nw: {
+                            looping: true,
+                            spriteSheet: sheets["/static/Belt_NW.png"],
+                            indexes: sheets["/static/Belt_NW.png"]
+                                .sprites.map((_, i) => i),
                         },
                     },
                 });
