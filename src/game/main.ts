@@ -60,7 +60,7 @@ new Engine(ctx, {
         /**
          * Setup world
          */
-        const world = new World(new Vec2(3, 3));
+        const world = new World(new Vec2(8, 8));
         const w = e.createActor("world");
         w.renderer = new SpriteRenderer();
         w.addBehaviour(
