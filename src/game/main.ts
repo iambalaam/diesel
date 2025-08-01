@@ -34,6 +34,7 @@ const assetFilenames = [
     ...["NE", "SE", "SW", "NW"].map((dir) => `Belt_${dir}.png`),
     "debug-roof.png",
     "debug-ball.png",
+    "debug-selector.png",
 ].map((name) => `/static/${name}`);
 
 const sheets: Record<string, Spritesheet> = {};
@@ -131,7 +132,9 @@ new Engine(ctx, {
                     return pile;
                 });
                 actor.addBehaviour(conveyor);
-                actor.addBehaviour(new Interactive());
+                actor.addBehaviour(
+                    new Interactive(sheets["/static/debug-selector.png"]),
+                );
                 conveyor.setItem(0);
             },
         );
