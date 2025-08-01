@@ -55,6 +55,7 @@ sheetPromises.forEach(([filename, spritesheet]) => {
 });
 
 export const conveyorItems = sheets["/static/debug-ball.png"];
+export const selector = sheets["/static/debug-selector.png"];
 
 new Engine(ctx, {
     onInit: (e, time) => {
@@ -128,12 +129,13 @@ new Engine(ctx, {
                     const pile = e.createActor(`pile-${i}`);
                     pile.position.translation = pos;
                     pile.addBehaviour(new Pile(item));
+                    pile.addBehaviour(new Interactive());
                     pile.renderer = new SpriteRenderer();
                     return pile;
                 });
                 actor.addBehaviour(conveyor);
                 actor.addBehaviour(
-                    new Interactive(sheets["/static/debug-selector.png"]),
+                    new Interactive(),
                 );
                 conveyor.setItem(0);
             },

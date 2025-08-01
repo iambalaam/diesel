@@ -22,7 +22,7 @@ export class Actor {
     renderer?: SpriteRenderer;
     private behaviours: Behaviour[];
 
-    constructor(public name: string) {
+    constructor(public name: string, public destroy: () => void) {
         this.position = {
             translation: new Vec3(0, 0, 0),
             forwards: new Vec3(0, -1, 0),

@@ -45,7 +45,10 @@ export class Engine {
     }
 
     createActor(name: string) {
-        const actor = new Actor(name);
+        const actor = new Actor(
+            name,
+            () => this.#actors = this.#actors.filter((a) => a !== actor),
+        );
         this.#actors.push(actor);
         return actor;
     }

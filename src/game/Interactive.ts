@@ -5,6 +5,9 @@ import { Spritesheet } from "../engine/Spritesheet.ts";
 import { screen2World } from "../engine/Transform.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
+import { Conveyor } from "./Conveyor.ts";
+import { selector } from "./main.ts";
+import { Pile } from "./Pile.ts";
 import { World } from "./World.ts";
 
 const ALL_INTERACTIVE: Actor[] = [];
@@ -108,21 +111,39 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
                 return a !== Interactive.current?.actor &&
                     pos.x === worldPos.x && pos.y === worldPos.y;
             });
+
             if (!actor) {
                 canvas.style.cursor = "grab";
                 Interactive.current.grab = false;
-            } else {
-                Interactive.current.dropping = true;
+                return;
             }
+            const grabbedPile = Interactive.current.actor.getBehaviour(Pile);
+            if (grabbedPile) {
+                const groundPile = actor.getBehaviour(Pile);
+                if (groundPile) {
+                    grabbedPile.getItems().forEach((item) =>
+                        groundPile.addItem(item)
+                    );
+                    Interactive.current.actor.destroy();
+                    Interactive.current = undefined;
+                    return;
+                }
+                const groundConveyor = actor.getBehaviour(Conveyor);
+                const pileItems = grabbedPile.getItems();
+                if (groundConveyor && pileItems.length === 1) {
+                    groundConveyor.setItem(pileItems[0]);
+                    Interactive.current.actor.destroy();
+                    Interactive.current = undefined;
+                    return;
+                }
+            }
+
+            Interactive.current.dropping = true;
         }
     });
 }
 
 export class Interactive extends Behaviour {
-    constructor(private selector: Spritesheet) {
-        super();
-    }
-
     static current: {
         grab: boolean;
         dropping: boolean;
@@ -151,7 +172,7 @@ export class Interactive extends Behaviour {
         if (Interactive.current?.grab && Interactive.current.actor === actor) {
             const groundPos = actor.position.translation.clone();
             groundPos.z = 0;
-            actor.renderer.renderSprite(this.selector, 0, groundPos);
+            actor.renderer.renderSprite(selector, 0, groundPos);
         }
     }
 }
