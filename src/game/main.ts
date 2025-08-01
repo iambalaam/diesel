@@ -10,6 +10,7 @@ import { WorldRenderer } from "./WorldRenderer.ts";
 import { loadSpritesheet } from "./assets.ts";
 import { Conveyor } from "./Conveyor.ts";
 import { Pile } from "./Pile.ts";
+import { addInteraction, Interactive } from "./Interactive.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -68,6 +69,7 @@ new Engine(ctx, {
                 sheets["/static/debug-roof.png"],
             ),
         );
+        addInteraction(ctx.canvas, world); // Event listeners
 
         /**
          * Setup conveyors
@@ -106,6 +108,7 @@ new Engine(ctx, {
                     return pile;
                 });
                 actor.addBehaviour(conveyor);
+                actor.addBehaviour(new Interactive());
                 conveyor.setItem(0);
             },
         );

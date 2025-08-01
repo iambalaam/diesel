@@ -48,4 +48,12 @@ export class Vec3 {
             Math.round(this.z),
         );
     }
+
+    floor() {
+        return new Vec3(
+            Math.floor(this.x),
+            Math.floor(this.y),
+            Math.floor(this.z),
+        );
+    }
 }
