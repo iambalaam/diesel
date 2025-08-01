@@ -2,10 +2,12 @@ import { Actor } from "../engine/Actor.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
 import { Vec2 } from "../engine/Vec2.ts";
-import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { World } from "./World.ts";
+import { conveyorItems } from "./main.ts";
 
+const CONVEYOR_SPEED = 0.00016;
+// const CONVEYOR_SPEED = 0.0016;
 const ALL_CONVEYORS: Actor[] = [];
 
 function getConveyorAt(pos: Vec2) {
@@ -14,15 +16,16 @@ function getConveyorAt(pos: Vec2) {
     );
 }
 
-const CONVEYOR_SPEED = 0.00018;
-
 export type ConveyorItem = 0 | 1;
 
 export class Conveyor extends Behaviour {
     private currentProgress = 0;
     private currentItem?: ConveyorItem = undefined;
 
-    constructor(private conveyorItems: Spritesheet, private world: World) {
+    constructor(
+        private world: World,
+        private createPile: (pos: Vec3, item: ConveyorItem) => void,
+    ) {
         super();
     }
 
@@ -36,13 +39,12 @@ export class Conveyor extends Behaviour {
             this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
 
             if (this.currentProgress >= 1) {
-                const next = getConveyorAt(pos.translation.add(pos.forwards));
+                const nextPos = pos.translation.add(pos.forwards);
+                const next = getConveyorAt(nextPos);
                 if (next instanceof Actor) {
-                    console.log("ACTOR");
-
+                    // Move onto next in line
                     const nextConveyor = next.getBehaviour(Conveyor);
                     if (nextConveyor) {
-                        console.log("NEXT");
                         if (nextConveyor.currentItem === undefined) {
                             nextConveyor.setItem(this.currentItem);
                             this.currentItem = undefined;
@@ -50,6 +52,10 @@ export class Conveyor extends Behaviour {
                             this.currentProgress = 1;
                         }
                     }
+                } else {
+                    // Create a pile
+                    this.createPile(nextPos, this.currentItem);
+                    this.currentItem = undefined;
                 }
             }
         } else {
@@ -61,7 +67,7 @@ export class Conveyor extends Behaviour {
         const { renderer, position } = actor;
         if (this.currentItem !== undefined && renderer) {
             renderer.renderSprite(
-                this.conveyorItems,
+                conveyorItems,
                 this.currentItem,
                 position.translation
                     .add(position.forwards.scale(this.currentProgress))

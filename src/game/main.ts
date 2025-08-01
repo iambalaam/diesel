@@ -9,6 +9,7 @@ import { World } from "./World.ts";
 import { WorldRenderer } from "./WorldRenderer.ts";
 import { loadSpritesheet } from "./assets.ts";
 import { Conveyor } from "./Conveyor.ts";
+import { Pile } from "./Pile.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -51,6 +52,8 @@ sheetPromises.forEach(([filename, spritesheet]) => {
     sheets[filename] = spritesheet;
 });
 
+export const conveyorItems = sheets["/static/debug-ball.png"];
+
 new Engine(ctx, {
     onInit: (e, time) => {
         /**
@@ -76,8 +79,8 @@ new Engine(ctx, {
             { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0) },
             { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0) },
             { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0) },
-            { pos: new Vec3(0, 2, 0), dir: new Vec3(0, -1, 0) },
-            { pos: new Vec3(0, 1, 0), dir: new Vec3(0, -1, 0) },
+            // { pos: new Vec3(0, 2, 0), dir: new Vec3(0, -1, 0) },
+            // { pos: new Vec3(0, 1, 0), dir: new Vec3(0, -1, 0) },
         ].forEach(
             ({ pos, dir }, i) => {
                 const cardinal = dir2Cardinal(dir);
@@ -95,10 +98,12 @@ new Engine(ctx, {
                 actor.renderer = new SpriteRenderer();
                 actor.position.translation = pos;
                 actor.position.forwards = dir;
-                const conveyor = new Conveyor(
-                    sheets["/static/debug-ball.png"],
-                    world,
-                );
+                const conveyor = new Conveyor(world, (pos, item) => {
+                    const pile = e.createActor(`pile-${i}`);
+                    pile.position.translation = pos;
+                    pile.addBehaviour(new Pile(item));
+                    pile.renderer = new SpriteRenderer();
+                });
                 actor.addBehaviour(conveyor);
                 if (i === 0) {
                     conveyor.setItem(0);
