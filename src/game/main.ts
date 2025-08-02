@@ -94,6 +94,7 @@ new Engine(ctx, {
          * Setup conveyors
          */
         [
+            { pos: new Vec3(4, 3, 0), dir: new Vec3(1, 0, 0), type: Pile },
             { pos: new Vec3(0, 0, 0), dir: new Vec3(1, 0, 0), type: Drill },
             { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
             { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
@@ -106,27 +107,31 @@ new Engine(ctx, {
                 type: Splitter,
             },
         ].forEach(
-            ({ pos, dir, type }, i) => {
+            ({ pos, dir, type: Type }, i) => {
                 const actor = e.createActor(
-                    `${type.name}-${i}`,
+                    `${Type.name}-${i}`,
                 );
-                actor.animator = new Animator(
-                    e,
-                    time,
-                    type === Conveyor
-                        ? conveyorAnimStates
-                        : type === Splitter
-                        ? splitterAnimStates
-                        : drillAnimStates,
-                );
+                if (Type === Conveyor || Type === Splitter || Type === Drill) {
+                    actor.animator = new Animator(
+                        e,
+                        time,
+                        Type === Conveyor
+                            ? conveyorAnimStates
+                            : Type === Splitter
+                            ? splitterAnimStates
+                            : drillAnimStates,
+                    );
+                }
                 actor.renderer = new SpriteRenderer();
                 actor.position.translation = pos;
                 actor.position.forwards = dir;
 
-                actor.addBehaviour(new type(createPile));
-                actor.addBehaviour(
-                    new Interactive(),
-                );
+                if (Type === Pile) {
+                    actor.addBehaviour(new Pile(0));
+                } else {
+                    actor.addBehaviour(new Type(createPile as any));
+                }
+                actor.addBehaviour(new Interactive());
             },
         );
     },

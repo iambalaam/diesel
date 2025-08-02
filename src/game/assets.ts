@@ -113,27 +113,47 @@ export async function loadAllAnimations(): Promise<{
                 idle: {
                     looping: true,
                     spriteSheet: await drillSheets[0],
-                    indexes: SPRITE_INDEXES,
+                    indexes: [0],
                 },
                 ne: {
                     looping: true,
                     spriteSheet: await drillSheets[0],
                     indexes: SPRITE_INDEXES,
                 },
+                "ne-idle": {
+                    looping: true,
+                    spriteSheet: await drillSheets[0],
+                    indexes: [0],
+                },
                 se: {
                     looping: true,
                     spriteSheet: await drillSheets[1],
                     indexes: SPRITE_INDEXES,
+                },
+                "se-idle": {
+                    looping: true,
+                    spriteSheet: await drillSheets[1],
+                    indexes: [0],
                 },
                 sw: {
                     looping: true,
                     spriteSheet: await drillSheets[2],
                     indexes: SPRITE_INDEXES,
                 },
+                "sw-idle": {
+                    looping: true,
+                    spriteSheet: await drillSheets[2],
+                    indexes: [0],
+                },
                 nw: {
                     looping: true,
                     spriteSheet: await drillSheets[3],
                     indexes: SPRITE_INDEXES,
+                },
+                "nw-idle": {
+                    looping: true,
+                    spriteSheet: await drillSheets[3],
+                    indexes: [0],
                 },
             },
         },

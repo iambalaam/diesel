@@ -36,6 +36,7 @@ export class Actor {
     addBehaviour(behaviour: Behaviour) {
         this.behaviours.push(behaviour);
         behaviour.init(this);
+        return behaviour;
     }
 
     getBehaviour<T extends Behaviour>(

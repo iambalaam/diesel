@@ -5,6 +5,7 @@ import { screen2World } from "../engine/Transform.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Conveyor } from "./Conveyor.ts";
+import { Drill } from "./Drill.ts";
 import { selector } from "./main.ts";
 import { Pile } from "./Pile.ts";
 import { World } from "./World.ts";
@@ -131,6 +132,13 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
                 const pileItems = grabbedPile.getItems();
                 if (groundConveyor && pileItems.length === 1) {
                     groundConveyor.setItem(pileItems[0]);
+                    Interactive.current.actor.destroy();
+                    Interactive.current = undefined;
+                    return;
+                }
+                const groundDrill = actor.getBehaviour(Drill);
+                if (groundDrill) {
+                    groundDrill.addFuel();
                     Interactive.current.actor.destroy();
                     Interactive.current = undefined;
                     return;
