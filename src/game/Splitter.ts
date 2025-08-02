@@ -1,7 +1,7 @@
 import { Actor } from "../engine/Actor.ts";
 import { Time } from "../engine/Engine.ts";
 import {
-    ALL_CARRIERS,
+    addCarrier,
     Conveyor,
     CONVEYOR_SPEED,
     getCarrierAt,
@@ -44,7 +44,7 @@ export class Splitter extends Conveyor {
         } else {
             // Create a pile
             const pile = this.createPile(nextPos, this.currentItem);
-            ALL_CARRIERS.push(pile);
+            addCarrier(pile);
             this.currentItem = undefined;
         }
     }

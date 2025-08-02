@@ -37,7 +37,6 @@ export class Animator extends Component {
 
     startCycle(name: string, time: Time) {
         const cycle = this.#states.cycles[name];
-        console.log(name, cycle);
         if (!cycle) throw new Error(`No cycle: ${name}`);
         this.#currentCycle = cycle;
         // This keeps all animations in phase

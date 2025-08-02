@@ -5,34 +5,31 @@ import { Time } from "../engine/Engine.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Pile } from "./Pile.ts";
-import { World } from "./World.ts";
-import { conveyorItems } from "./main.ts";
+import { conveyorItems, getCardinal } from "./main.ts";
 
 export const CONVEYOR_SPEED = 0.004 / SPRITE_MS;
-export const ALL_CARRIERS: Actor[] = [];
+const ALL_CARRIERS: Actor[] = [];
 
 export function getCarrierAt(pos: Vec2) {
     return ALL_CARRIERS.find((c) =>
         pos.x === c.position.translation.x && pos.y === c.position.translation.y
     );
 }
+export function addCarrier(actor: Actor) {
+    ALL_CARRIERS.push(actor);
+}
+export function removeCarrier(actor: Actor) {
+    const thisIndex = ALL_CARRIERS.findIndex((c) => c === actor);
+    ALL_CARRIERS.splice(thisIndex, 1);
+}
 
 export type ConveyorItem = 0 | 1;
-
-const getCardinal = (dir: Vec3) => {
-    if (dir.x === 1 && dir.y === 0) return "ne";
-    if (dir.x === 0 && dir.y === -1) return "se";
-    if (dir.x === -1 && dir.y === 0) return "sw";
-    if (dir.x === 0 && dir.y === 1) return "nw";
-    throw new Error(`Could not find cardinal for ${dir}`);
-};
 
 export class Conveyor extends Behaviour {
     protected currentProgress = 0;
     protected currentItem?: ConveyorItem = undefined;
 
     constructor(
-        protected world: World,
         protected createPile: (pos: Vec3, item: ConveyorItem) => Actor,
     ) {
         super();
@@ -80,7 +77,7 @@ export class Conveyor extends Behaviour {
         } else {
             // Create a pile
             const pile = this.createPile(nextPos, this.currentItem);
-            ALL_CARRIERS.push(pile);
+            addCarrier(pile);
             this.currentItem = undefined;
         }
     }
@@ -114,7 +111,6 @@ export class Conveyor extends Behaviour {
     }
 
     override destroy(actor: Actor): void {
-        const thisIndex = ALL_CARRIERS.findIndex((c) => c === actor);
-        ALL_CARRIERS.splice(thisIndex, 1);
+        removeCarrier(actor);
     }
 }
