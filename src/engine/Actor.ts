@@ -21,13 +21,15 @@ export class Actor {
     animator?: Animator;
     renderer?: SpriteRenderer;
     private behaviours: Behaviour[];
+    #destroy: () => void;
 
-    constructor(public name: string, public destroy: () => void) {
+    constructor(public name: string, destroy: () => void) {
         this.position = {
             translation: new Vec3(0, 0, 0),
             forwards: new Vec3(0, -1, 0),
             down: new Vec3(0, 0, -1),
         };
+        this.#destroy = destroy;
         this.behaviours = [];
     }
 
@@ -54,5 +56,10 @@ export class Actor {
         for (const behaviour of this.behaviours) {
             behaviour.update(this, time);
         }
+    }
+
+    destroy() {
+        this.behaviours.forEach((b) => b.destroy(this));
+        this.#destroy();
     }
 }

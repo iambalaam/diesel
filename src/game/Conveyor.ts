@@ -2,7 +2,6 @@ import { Actor } from "../engine/Actor.ts";
 import { SPRITE_MS } from "../engine/Animator.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
-import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Pile } from "./Pile.ts";
@@ -108,5 +107,10 @@ export class Conveyor extends Behaviour {
         this.currentProgress = 0;
         this.currentItem = item;
         return true;
+    }
+
+    override destroy(actor: Actor): void {
+        const thisIndex = ALL_CARRIERS.findIndex((c) => c === actor);
+        ALL_CARRIERS.splice(thisIndex, 1);
     }
 }

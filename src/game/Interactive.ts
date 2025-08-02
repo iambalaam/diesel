@@ -1,7 +1,6 @@
 import { Actor } from "../engine/Actor.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
-import { Spritesheet } from "../engine/Spritesheet.ts";
 import { screen2World } from "../engine/Transform.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
@@ -174,5 +173,10 @@ export class Interactive extends Behaviour {
             groundPos.z = 0;
             actor.renderer.renderSprite(selector, 0, groundPos);
         }
+    }
+
+    override destroy(actor: Actor): void {
+        const thisIndex = ALL_INTERACTIVE.findIndex((i) => i === actor);
+        ALL_INTERACTIVE.splice(thisIndex, 1);
     }
 }

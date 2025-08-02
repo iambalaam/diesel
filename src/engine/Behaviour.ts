@@ -6,4 +6,5 @@ export class Behaviour extends Component {
     init(_actor: Actor) {}
     render(_actor: Actor, _time: Time) {}
     update(_actor: Actor, _time: Time) {}
+    destroy(_actor: Actor) {}
 }
