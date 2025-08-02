@@ -6,6 +6,7 @@ import {
     CONVEYOR_SPEED,
     getCarrierAt,
 } from "./Conveyor.ts";
+import { Drill, getDrillAt } from "./Drill.ts";
 import { Pile } from "./Pile.ts";
 
 export class Splitter extends Conveyor {
@@ -20,10 +21,16 @@ export class Splitter extends Conveyor {
 
         const nextPos = pos.translation.add(pos.forwards);
         actor.position.forwards = actor.position.forwards.scale(-1);
-        const next = getCarrierAt(nextPos);
-        if (next instanceof Actor) {
+        const nextDrill = getDrillAt(nextPos);
+        const nextCarrier = getCarrierAt(nextPos);
+        if (nextDrill instanceof Actor) {
+            nextDrill.getBehaviour(Drill)?.addFuel();
+            this.currentItem = undefined;
+            return;
+        }
+        if (nextCarrier instanceof Actor) {
             // Move onto next in line
-            const nextConveyor = next.getBehaviour(Conveyor);
+            const nextConveyor = nextCarrier.getBehaviour(Conveyor);
             if (nextConveyor) {
                 if (nextConveyor.getCurrentItem() === undefined) {
                     nextConveyor.setItem(this.currentItem);
@@ -34,7 +41,7 @@ export class Splitter extends Conveyor {
                 }
             }
 
-            const nextPile = next.getBehaviour(Pile);
+            const nextPile = nextCarrier.getBehaviour(Pile);
             if (nextPile && nextPile.addItem(this.currentItem)) {
                 this.currentItem = undefined;
                 return;

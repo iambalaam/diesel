@@ -101,12 +101,8 @@ new Engine(ctx, {
             { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
             { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
             { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
-            { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
-            {
-                pos: new Vec3(0, 2, 0),
-                dir: new Vec3(0, 1, 0),
-                type: Splitter,
-            },
+            { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Splitter },
+            { pos: new Vec3(0, 2, 0), dir: new Vec3(0, 1, 0), type: Splitter },
         ].forEach(
             ({ pos, dir, type: Type }, i) => {
                 const actor = e.createActor(
