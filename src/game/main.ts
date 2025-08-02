@@ -96,6 +96,7 @@ new Engine(ctx, {
         [
             { pos: new Vec3(4, 3, 0), dir: new Vec3(1, 0, 0), type: Pile },
             { pos: new Vec3(0, 0, 0), dir: new Vec3(1, 0, 0), type: Drill },
+            { pos: new Vec3(4, 4, 0), dir: new Vec3(1, 0, 0), type: Drill },
             { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
             { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
             { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },

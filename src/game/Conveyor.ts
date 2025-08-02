@@ -83,8 +83,7 @@ export class Conveyor extends Behaviour {
             }
         } else {
             // Create a pile
-            const pile = this.createPile(nextPos, this.currentItem);
-            addCarrier(pile);
+            this.createPile(nextPos, this.currentItem);
             this.currentItem = undefined;
         }
     }

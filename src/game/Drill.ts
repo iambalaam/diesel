@@ -53,8 +53,12 @@ export class Drill extends Behaviour {
             const { translation, forwards } = actor.position;
             const targetPos = translation.add(forwards);
 
-            // TODO:
             const drill = getDrillAt(targetPos);
+            if (drill instanceof Actor) {
+                drill.getBehaviour(Drill)?.addFuel();
+                return;
+            }
+
             const carrier = getCarrierAt(targetPos);
             if (carrier) {
                 const conveyor = carrier.getBehaviour(Conveyor);
