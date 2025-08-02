@@ -1,13 +1,7 @@
 import { Actor } from "../engine/Actor.ts";
 import { Time } from "../engine/Engine.ts";
-import {
-    addCarrier,
-    Conveyor,
-    CONVEYOR_SPEED,
-    getCarrierAt,
-} from "./Conveyor.ts";
-import { Drill, getDrillAt } from "./Drill.ts";
-import { Pile } from "./Pile.ts";
+import { Container, getContainerAt } from "./Container.ts";
+import { Conveyor, CONVEYOR_SPEED } from "./Conveyor.ts";
 
 export class Splitter extends Conveyor {
     override update(actor: Actor, time: Time): void {
@@ -16,43 +10,51 @@ export class Splitter extends Conveyor {
             this.currentProgress = 0;
             return;
         }
-        this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
-        if (this.currentProgress < 1) return;
 
         const nextPos = pos.translation.add(pos.forwards);
-        actor.position.forwards = actor.position.forwards.scale(-1);
-        const nextDrill = getDrillAt(nextPos);
-        const nextCarrier = getCarrierAt(nextPos);
-        if (nextDrill instanceof Actor) {
-            nextDrill.getBehaviour(Drill)?.addFuel();
-            this.currentItem = undefined;
+        const nextActor = getContainerAt(nextPos);
+
+        if (nextActor === undefined) {
+            /// Nothing infront
+            this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
+            if (this.currentProgress >= 1) {
+                this.createPile(nextPos, this.currentItem);
+                actor.getBehaviour(Container)?.empty();
+                this.currentItem = undefined;
+                this.currentProgress = 0;
+                actor.position.forwards = actor.position.forwards.scale(-1);
+            }
             return;
         }
-        if (nextCarrier instanceof Actor) {
-            // Move onto next in line
-            const nextConveyor = nextCarrier.getBehaviour(Conveyor);
-            if (nextConveyor) {
-                if (nextConveyor.getCurrentItem() === undefined) {
-                    nextConveyor.setItem(this.currentItem);
-                    this.currentItem = undefined;
-                    return;
-                } else {
-                    this.currentProgress = 1;
-                }
-            }
 
-            const nextPile = nextCarrier.getBehaviour(Pile);
-            if (nextPile && nextPile.addItem(this.currentItem)) {
-                this.currentItem = undefined;
-                return;
-            } else {
-                this.currentProgress = 1;
-            }
-        } else {
-            // Create a pile
-            const pile = this.createPile(nextPos, this.currentItem);
-            addCarrier(pile);
-            this.currentItem = undefined;
+        const nextContainer = nextActor?.getBehaviour(Container);
+        if (!nextContainer) throw new Error("?");
+
+        if (nextContainer?.isFull) {
+            actor.position.forwards = actor.position.forwards.scale(-1);
+            this.currentProgress = 0;
+            return;
         }
+
+        if (this.promoteItem) {
+            if (this.promoteTo !== nextActor) {
+                this.promoteItem = undefined;
+                this.promoteTo = undefined;
+            }
+            this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
+            if (this.currentProgress >= 1) {
+                this.promoteItem!(this.currentItem);
+                actor.position.forwards = actor.position.forwards.scale(-1);
+                actor.getBehaviour(Container)?.empty();
+                this.currentItem = undefined;
+                this.currentProgress = 0;
+            }
+        }
+
+        const req = nextContainer.requestSpace(time);
+        if (!req) return;
+
+        this.promoteTo = nextActor;
+        this.promoteItem = req;
     }
 }

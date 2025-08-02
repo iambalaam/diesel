@@ -95,7 +95,7 @@ export class Engine {
             while (this.#prevUpdateMS < this.#prevRAFMS) {
                 this.#prevUpdateMS += UPDATE_MS;
                 updateCount++;
-                const updateTime = { time: ms, deltaTime: UPDATE_HZ };
+                const updateTime = { time: ms, deltaTime: UPDATE_MS };
                 pollCurrentGamepad();
                 this.#hooks.onUpdate(this, updateTime);
                 this.#actorUpdate(this, updateTime);

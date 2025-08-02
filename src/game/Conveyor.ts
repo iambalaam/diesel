@@ -2,33 +2,19 @@ import { Actor } from "../engine/Actor.ts";
 import { SPRITE_MS } from "../engine/Animator.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
-import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
-import { Drill, getDrillAt } from "./Drill.ts";
-import { Pile } from "./Pile.ts";
+import { Container, getContainerAt } from "./Container.ts";
 import { conveyorItems, getCardinal } from "./main.ts";
 
-export const CONVEYOR_SPEED = 0.004 / SPRITE_MS;
-const ALL_CARRIERS: Actor[] = [];
-
-export function getCarrierAt(pos: Vec2) {
-    return ALL_CARRIERS.find((c) =>
-        pos.x === c.position.translation.x && pos.y === c.position.translation.y
-    );
-}
-export function addCarrier(actor: Actor) {
-    ALL_CARRIERS.push(actor);
-}
-export function removeCarrier(actor: Actor) {
-    const thisIndex = ALL_CARRIERS.findIndex((c) => c === actor);
-    ALL_CARRIERS.splice(thisIndex, 1);
-}
+export const CONVEYOR_SPEED = 0.0145 / SPRITE_MS;
 
 export type ConveyorItem = 0 | 1;
 
 export class Conveyor extends Behaviour {
     protected currentProgress = 0;
     protected currentItem?: ConveyorItem = undefined;
+    protected promoteTo: Actor | undefined;
+    protected promoteItem?: (item: ConveyorItem) => void;
 
     constructor(
         protected createPile: (pos: Vec3, item: ConveyorItem) => Actor,
@@ -37,7 +23,10 @@ export class Conveyor extends Behaviour {
     }
 
     override init(actor: Actor): void {
-        ALL_CARRIERS.push(actor);
+        actor.addBehaviour(new Container(1)).onItem = (item) => {
+            this.currentItem = item;
+            this.currentProgress = 0;
+        };
         actor.animator?.startCycle(getCardinal(actor.position.forwards), {
             time: 0,
             deltaTime: 0,
@@ -50,42 +39,49 @@ export class Conveyor extends Behaviour {
             this.currentProgress = 0;
             return;
         }
-        this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
-        if (this.currentProgress < 1) return;
 
         const nextPos = pos.translation.add(pos.forwards);
-        const nextDrill = getDrillAt(nextPos);
-        const nextCarrier = getCarrierAt(nextPos);
-        if (nextDrill instanceof Actor) {
-            nextDrill.getBehaviour(Drill)?.addFuel();
-            this.currentItem = undefined;
+        const nextActor = getContainerAt(nextPos);
+
+        if (nextActor === undefined) {
+            // Nothing infront
+            this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
+            if (this.currentProgress >= 1) {
+                this.createPile(nextPos, this.currentItem);
+                actor.getBehaviour(Container)?.empty();
+                this.currentItem = undefined;
+                this.currentProgress = 0;
+            }
             return;
         }
-        if (nextCarrier instanceof Actor) {
-            // Move onto next in line
-            const nextConveyor = nextCarrier.getBehaviour(Conveyor);
-            if (nextConveyor) {
-                if (nextConveyor.getCurrentItem() === undefined) {
-                    nextConveyor.setItem(this.currentItem);
-                    this.currentItem = undefined;
-                    return;
-                } else {
-                    this.currentProgress = 1;
-                }
-            }
 
-            const nextPile = nextCarrier.getBehaviour(Pile);
-            if (nextPile && nextPile.addItem(this.currentItem)) {
-                this.currentItem = undefined;
-                return;
-            } else {
-                this.currentProgress = 1;
-            }
-        } else {
-            // Create a pile
-            this.createPile(nextPos, this.currentItem);
-            this.currentItem = undefined;
+        const nextContainer = nextActor?.getBehaviour(Container);
+        if (!nextContainer) throw new Error("?");
+
+        if (nextContainer?.isFull) {
+            this.currentProgress = 0;
+            return;
         }
+
+        if (this.promoteItem) {
+            if (this.promoteTo !== nextActor) {
+                this.promoteItem = undefined;
+                this.promoteTo = undefined;
+            }
+            this.currentProgress += CONVEYOR_SPEED * time.deltaTime;
+            if (this.currentProgress >= 1) {
+                this.promoteItem!(this.currentItem);
+                actor.getBehaviour(Container)?.empty();
+                this.currentItem = undefined;
+                this.currentProgress = 0;
+            }
+        }
+
+        const req = nextContainer.requestSpace(time);
+        if (!req) return;
+
+        this.promoteTo = nextActor;
+        this.promoteItem = req;
     }
 
     override render(actor: Actor, _time: Time): void {
@@ -103,20 +99,5 @@ export class Conveyor extends Behaviour {
                     .add(new Vec3(0, 0, 0.3)),
             );
         }
-    }
-
-    getCurrentItem() {
-        return this.currentItem;
-    }
-
-    setItem(item: ConveyorItem) {
-        if (this.currentItem !== undefined) return false;
-        this.currentProgress = 0;
-        this.currentItem = item;
-        return true;
-    }
-
-    override destroy(actor: Actor): void {
-        removeCarrier(actor);
     }
 }

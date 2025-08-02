@@ -2,7 +2,8 @@ import { Actor } from "../engine/Actor.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
 import { Vec3 } from "../engine/Vec3.ts";
-import { addCarrier, ConveyorItem, removeCarrier } from "./Conveyor.ts";
+import { Container } from "./Container.ts";
+import { ConveyorItem } from "./Conveyor.ts";
 import { conveyorItems } from "./main.ts";
 
 const ITEM_HEIGHT = 0.1;
@@ -17,7 +18,9 @@ export class Pile extends Behaviour {
     }
 
     override init(actor: Actor): void {
-        addCarrier(actor);
+        actor.addBehaviour(new Container(5)).onItem = (item) => {
+            this.items.push(item);
+        };
     }
 
     getItems = () => [...this.items];
@@ -44,9 +47,5 @@ export class Pile extends Behaviour {
                 ),
             );
         });
-    }
-
-    override destroy(actor: Actor): void {
-        removeCarrier(actor);
     }
 }

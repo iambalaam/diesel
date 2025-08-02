@@ -4,8 +4,7 @@ import { Time } from "../engine/Engine.ts";
 import { screen2World } from "../engine/Transform.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
-import { Conveyor } from "./Conveyor.ts";
-import { Drill } from "./Drill.ts";
+import { Container } from "./Container.ts";
 import { selector } from "./main.ts";
 import { Pile } from "./Pile.ts";
 import { World } from "./World.ts";
@@ -119,26 +118,11 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
             }
             const grabbedPile = Interactive.current.actor.getBehaviour(Pile);
             if (grabbedPile) {
-                const groundPile = actor.getBehaviour(Pile);
-                if (groundPile) {
-                    grabbedPile.getItems().forEach((item) =>
-                        groundPile.addItem(item)
+                const container = actor.getBehaviour(Container);
+                if (container && !container.isFull) {
+                    container.requestSpace({ time: 0, deltaTime: 0 })?.(
+                        grabbedPile.getItems()[0],
                     );
-                    Interactive.current.actor.destroy();
-                    Interactive.current = undefined;
-                    return;
-                }
-                const groundConveyor = actor.getBehaviour(Conveyor);
-                const pileItems = grabbedPile.getItems();
-                if (groundConveyor && pileItems.length === 1) {
-                    groundConveyor.setItem(pileItems[0]);
-                    Interactive.current.actor.destroy();
-                    Interactive.current = undefined;
-                    return;
-                }
-                const groundDrill = actor.getBehaviour(Drill);
-                if (groundDrill) {
-                    groundDrill.addFuel();
                     Interactive.current.actor.destroy();
                     Interactive.current = undefined;
                     return;
