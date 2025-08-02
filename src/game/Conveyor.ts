@@ -8,10 +8,10 @@ import { Pile } from "./Pile.ts";
 import { World } from "./World.ts";
 import { conveyorItems } from "./main.ts";
 
-const CONVEYOR_SPEED = 0.004 / SPRITE_MS;
-const ALL_CARRIERS: Actor[] = [];
+export const CONVEYOR_SPEED = 0.004 / SPRITE_MS;
+export const ALL_CARRIERS: Actor[] = [];
 
-function getConveyorAt(pos: Vec2) {
+export function getCarrierAt(pos: Vec2) {
     return ALL_CARRIERS.find((c) =>
         pos.x === c.position.translation.x && pos.y === c.position.translation.y
     );
@@ -28,12 +28,12 @@ const getCardinal = (dir: Vec3) => {
 };
 
 export class Conveyor extends Behaviour {
-    private currentProgress = 0;
-    private currentItem?: ConveyorItem = undefined;
+    protected currentProgress = 0;
+    protected currentItem?: ConveyorItem = undefined;
 
     constructor(
-        private world: World,
-        private createPile: (pos: Vec3, item: ConveyorItem) => Actor,
+        protected world: World,
+        protected createPile: (pos: Vec3, item: ConveyorItem) => Actor,
     ) {
         super();
     }
@@ -56,12 +56,12 @@ export class Conveyor extends Behaviour {
         if (this.currentProgress < 1) return;
 
         const nextPos = pos.translation.add(pos.forwards);
-        const next = getConveyorAt(nextPos);
+        const next = getCarrierAt(nextPos);
         if (next instanceof Actor) {
             // Move onto next in line
             const nextConveyor = next.getBehaviour(Conveyor);
             if (nextConveyor) {
-                if (nextConveyor.currentItem === undefined) {
+                if (nextConveyor.getCurrentItem() === undefined) {
                     nextConveyor.setItem(this.currentItem);
                     this.currentItem = undefined;
                     return;
@@ -100,6 +100,10 @@ export class Conveyor extends Behaviour {
                     .add(new Vec3(0, 0, 0.3)),
             );
         }
+    }
+
+    getCurrentItem() {
+        return this.currentItem;
     }
 
     setItem(item: ConveyorItem) {
