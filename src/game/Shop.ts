@@ -9,6 +9,12 @@ import { Container } from "./Container.ts";
 import { ALL_SHOPS } from "./Interactive.ts";
 
 export type Costs = [number, number, number];
+const FLASH_MS = 200;
+const FLASH_COUNT = 3;
+
+async function waitMS(ms: number) {
+    return new Promise((res) => setTimeout(res, ms));
+}
 
 export class Shop extends Behaviour {
     current: Costs = [0, 0, 0];
@@ -29,16 +35,31 @@ export class Shop extends Behaviour {
             if (
                 this.current.every((cost, index) => cost >= this.costs[index])
             ) {
-                this.current = [0, 0, 0];
-                this.createItem(
-                    actor.position.translation.add(new Vec3(0, 0, 1)),
-                );
+                this.complete(actor);
             }
         };
     }
 
+    private async complete(actor: Actor) {
+        actor.animator?.joinCycle(this.current.join(","));
+        for (let i = 0; i < FLASH_COUNT; i++) {
+            await waitMS(FLASH_MS);
+            actor.animator?.joinCycle("0,0,0");
+            await waitMS(FLASH_MS);
+            actor.animator?.joinCycle(this.current.join(","));
+        }
+        this.current = [0, 0, 0];
+        this.createItem(
+            actor.position.translation.add(new Vec3(0, 0, 1)),
+        );
+    }
+
     override render(actor: Actor, _time: Time): void {
         if (!actor.animator) return;
+        if (this.current.every((count, index) => count >= this.costs[index])) {
+            // This allows the complete animation
+            return;
+        }
         const cycleName = this.current.join(",");
         if (cycleName in shopAnimStates.cycles) {
             actor.animator.joinCycle(cycleName);

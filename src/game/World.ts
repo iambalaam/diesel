@@ -51,7 +51,6 @@ export class World {
     }
 
     getResource(pos: Vec3): ConveyorItem | undefined {
-        console.log("HERE");
         const halfSize = pos.scale(0.5).floor();
         if (
             halfSize.x === this.halfCoal.x && halfSize.y === this.halfCoal.y
