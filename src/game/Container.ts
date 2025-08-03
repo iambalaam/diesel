@@ -5,7 +5,7 @@ import { Vec2 } from "../engine/Vec2.ts";
 import { ConveyorItem } from "./Conveyor.ts";
 
 const MAX_REQUEST_TIME = 5_000;
-const ALL_CONTAINERS: Actor[] = [];
+export const ALL_CONTAINERS: Actor[] = [];
 
 export function getContainerAt(pos: Vec2) {
     return ALL_CONTAINERS.find((c) =>

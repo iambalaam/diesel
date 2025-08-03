@@ -5,7 +5,7 @@ import { AnimationStates, Animator } from "../engine/Animator.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 
-import { World } from "./World.ts";
+import { getRandomEmptyLocation, World } from "./World.ts";
 import { WorldRenderer } from "./WorldRenderer.ts";
 import { loadAllAnimations, loadSpritesheet } from "./assets.ts";
 import { Conveyor, ConveyorItem } from "./Conveyor.ts";
@@ -15,6 +15,8 @@ import { Drill } from "./Drill.ts";
 import { Shop, shopAnimStates } from "./Shop.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Splitter } from "./Splitter.ts";
+import { ALL_CONTAINERS, Container } from "./Container.ts";
+import { worldToScreen } from "../engine/Transform.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -72,6 +74,8 @@ sheetPromises.forEach(([filename, spritesheet]) => {
 
 export const conveyorItems = sheets["/static/materials.png"];
 export const selector = sheets["/static/debug-selector.png"];
+
+let undoingSoftLock = false;
 
 new Engine(ctx, {
     onInit: (e, t) => {
@@ -158,5 +162,29 @@ new Engine(ctx, {
         // Background
         e.ctx.fillStyle = "grey";
         e.ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    },
+
+    onUpdate(e, t) {
+        if (undoingSoftLock) return;
+
+        const thereIsCoal = ALL_CONTAINERS.some((a) =>
+            a.getBehaviour(Shop) === undefined &&
+            a.getBehaviour(Container)?.items.includes(0)
+        );
+
+        if (!thereIsCoal) {
+            undoingSoftLock = true;
+            setTimeout(() => {
+                undoingSoftLock = false;
+                const pile = e.createActor(`pile`);
+                pile.position.translation = getRandomEmptyLocation(
+                    new Vec2(6, 6),
+                );
+                pile.addBehaviour(new Pile()).container!.items = [0];
+                pile.addBehaviour(new Interactive());
+                pile.renderer = new SpriteRenderer();
+                return pile;
+            }, 5_000);
+        }
     },
 });

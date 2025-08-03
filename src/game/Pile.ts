@@ -3,10 +3,8 @@ import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Container } from "./Container.ts";
-import { ConveyorItem } from "./Conveyor.ts";
 import { conveyorItems } from "./main.ts";
 
-const ITEM_HEIGHT = 0.1;
 const MAX_ITEMS = 5;
 
 const itemPositions: Vec3[] = [
@@ -19,12 +17,12 @@ const itemPositions: Vec3[] = [
 
 export class Pile extends Behaviour {
     container?: Container;
-    constructor(item: ConveyorItem) {
+    constructor() {
         super();
     }
 
     override init(actor: Actor): void {
-        this.container = actor.addBehaviour(new Container(5));
+        this.container = actor.addBehaviour(new Container(MAX_ITEMS));
     }
 
     override render(actor: Actor, _time: Time): void {

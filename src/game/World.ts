@@ -2,10 +2,20 @@ import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Actor } from "../engine/Actor.ts";
 import { ConveyorItem } from "./Conveyor.ts";
+import { getContainerAt } from "./Container.ts";
 
 export type Item = Actor | { spriteIndex: number };
 
 const randomNum = (max: number) => Math.floor(Math.random() * max);
+
+export function getRandomEmptyLocation(size: Vec2): Vec3 {
+    let pos;
+    do {
+        pos = new Vec3(randomNum(size.x), randomNum(size.y), 0);
+    } while (getContainerAt(pos) !== undefined);
+    return pos;
+}
+
 function generateRandomLocations(size: Vec2): [Vec2, Vec2, Vec2] {
     let first: Vec2;
     let second: Vec2;
