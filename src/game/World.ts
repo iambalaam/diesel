@@ -16,6 +16,9 @@ export class World {
         );
     }
 
+    getResource(position: Vec3) {
+    }
+
     isInsideWorld(v: Vec3) {
         return v.x >= 0 && v.x < this.size.x && v.y >= 0 && v.y < this.size.y;
     }

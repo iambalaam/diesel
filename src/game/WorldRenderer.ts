@@ -30,9 +30,8 @@ export class WorldRenderer extends Behaviour {
         const { renderer } = actor;
         if (!renderer) return;
 
-        for (let x = 0; x < this.world.size.x; x += 2) {
-            for (let y = 0; y < this.world.size.y; y += 2) {
-                const block = this.world.grid[x][y][-1];
+        for (let x = -6; x < this.world.size.x + 6; x += 2) {
+            for (let y = -6; y < this.world.size.y + 6; y += 2) {
                 renderer.renderSprite(
                     ground,
                     0,

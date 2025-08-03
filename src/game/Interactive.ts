@@ -26,6 +26,13 @@ const rotate90Deg = (v: Vec3) => {
 export function addInteraction(canvas: HTMLCanvasElement, world: World) {
     canvas.addEventListener("mousemove", ({ offsetX, offsetY }) => {
         const worldPos = screen2World(new Vec2(offsetX, offsetY)).floor();
+
+        // HACK worldbounds
+        if (worldPos.y - worldPos.x > 5) return;
+        if (worldPos.x - worldPos.y > 5) return;
+        if (worldPos.x + worldPos.y < 0) return;
+        if (worldPos.x + worldPos.y > 11) return;
+
         const actors = ALL_INTERACTIVE.filter((a) => {
             const pos = a.position.translation;
             return pos.x === worldPos.x &&
