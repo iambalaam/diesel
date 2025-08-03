@@ -17,22 +17,22 @@ export class WorldRenderer extends Behaviour {
         const { renderer } = actor;
         if (!renderer) return;
 
-        for (let x = 0; x < this.world.size.x; x++) {
-            for (let y = 0; y < this.world.size.y; y++) {
-                for (let z = -1; z < this.world.grid[x][y].length; z++) {
-                    const block = this.world.grid[x][y][z];
-                    if (block) {
-                        if (block instanceof Actor) {
-                            //
-                        } else {
-                            renderer.renderSprite(
-                                this.tiles,
-                                block.spriteIndex,
-                                new Vec3(x, y, z),
-                            );
-                        }
+        for (let x = 0; x < this.world.size.x; x += 1) {
+            for (let y = 0; y < this.world.size.y; y += 1) {
+                // for (let z = -1; z < this.world.grid[x][y].length; z++) {
+                const block = this.world.grid[x][y][-1];
+                if (block) {
+                    if (block instanceof Actor) {
+                        //
+                    } else {
+                        renderer.renderSprite(
+                            this.tiles,
+                            block.spriteIndex,
+                            new Vec3(x, y, -1),
+                        );
                     }
                 }
+                // }
             }
         }
     }

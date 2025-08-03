@@ -14,6 +14,7 @@ import { addInteraction, Interactive } from "./Interactive.ts";
 import { Splitter } from "./Splitter.ts";
 import { Drill } from "./Drill.ts";
 import { Container } from "./Container.ts";
+import { Shop, shopAnimStates } from "./Shop.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -45,6 +46,12 @@ const assetFilenames = [
     "debug-roof.png",
     "debug-selector.png",
 ].map((name) => `/static/${name}`);
+
+const ground = await loadSpritesheet(
+    "/static/Ground.png",
+    new Vec2(384, 192),
+    new Vec2(384 / 2, 192),
+);
 
 const sheets: Record<string, Spritesheet> = {};
 const sheetPromises = await Promise.all(
@@ -97,13 +104,13 @@ new Engine(ctx, {
         [
             { pos: new Vec3(4, 3, 0), dir: new Vec3(1, 0, 0), type: Pile },
             { pos: new Vec3(0, 0, 0), dir: new Vec3(1, 0, 0), type: Drill },
-            // { pos: new Vec3(4, 4, 0), dir: new Vec3(1, 0, 0), type: Drill },
-            // { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
-            // { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
-            // { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
-            // { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
-            // { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Splitter },
-            // { pos: new Vec3(0, 2, 0), dir: new Vec3(0, 1, 0), type: Splitter },
+            { pos: new Vec3(4, 4, 0), dir: new Vec3(1, 0, 0), type: Drill },
+            { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
+            { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
+            { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
+            { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
+            { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Splitter },
+            { pos: new Vec3(0, 2, 0), dir: new Vec3(0, 1, 0), type: Splitter },
         ].forEach(
             ({ pos, dir, type: Type }, i) => {
                 const actor = e.createActor(
@@ -133,6 +140,13 @@ new Engine(ctx, {
                 actor.addBehaviour(new Interactive());
             },
         );
+
+        // Add shop!
+        const shop = e.createActor("shop");
+        shop.addBehaviour(new Shop([2, 1, 0], (world: Vec3) => {}));
+        shop.animator = new Animator(e, time, shopAnimStates);
+        shop.renderer = new SpriteRenderer();
+        shop.position.translation = new Vec3(1, 1, 0);
     },
 
     onEarlyRender: (e) => {

@@ -10,6 +10,7 @@ import { Pile } from "./Pile.ts";
 import { World } from "./World.ts";
 
 const ALL_INTERACTIVE: Actor[] = [];
+export const ALL_SHOPS: Actor[] = [];
 const BLEND_SPEED = 0.5;
 const HOVER_HEIGHT = 0.1;
 const GRAB_HEIGHT = 0.5;
@@ -48,6 +49,7 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
             }
             return;
         }
+
         if (!actors.length) {
             Interactive.current = undefined;
             canvas.style.cursor = "unset";
@@ -105,20 +107,26 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
         if (Interactive.current) {
             const worldPos = screen2World(new Vec2(e.offsetX, e.offsetY))
                 .floor();
+            const shop = ALL_SHOPS.find((s) => {
+                const pos = s.position.translation;
+                return pos.x === worldPos.x &&
+                    pos.y === worldPos.y;
+            });
             const actor = ALL_INTERACTIVE.find((a) => {
                 const pos = a.position.translation;
                 return a !== Interactive.current?.actor &&
                     pos.x === worldPos.x && pos.y === worldPos.y;
             });
 
-            if (!actor) {
+            if (!actor && !shop) {
                 canvas.style.cursor = "grab";
                 Interactive.current.grab = false;
                 return;
             }
+            const ground = actor ?? shop;
             const grabbedPile = Interactive.current.actor.getBehaviour(Pile);
             if (grabbedPile && grabbedPile.container) {
-                const groundContainer = actor.getBehaviour(Container);
+                const groundContainer = ground!.getBehaviour(Container);
                 if (groundContainer && !groundContainer.isFull) {
                     grabbedPile.container.items.forEach((item) => {
                         groundContainer.requestSpace({
@@ -166,7 +174,11 @@ export class Interactive extends Behaviour {
         if (Interactive.current?.grab && Interactive.current.actor === actor) {
             const groundPos = actor.position.translation.clone();
             groundPos.z = 0;
-            actor.renderer.renderSprite(selector, 0, groundPos);
+            actor.renderer.renderSprite(
+                selector,
+                0,
+                groundPos.add(new Vec3(0, 0, 0.0001)),
+            );
         }
     }
 
