@@ -4,8 +4,35 @@ import { Actor } from "../engine/Actor.ts";
 
 export type Item = Actor | { spriteIndex: number };
 
+const randomNum = (max: number) => Math.floor(Math.random() * max);
+function generateRandomLocations(size: Vec2): [Vec2, Vec2, Vec2] {
+    let first: Vec2;
+    let second: Vec2;
+    let third: Vec2;
+    do {
+        first = new Vec2(randomNum(size.x), randomNum(size.y));
+    } while (first.x - first.y > 2);
+    do {
+        second = new Vec2(randomNum(size.x), randomNum(size.y));
+    } while (
+        (second.x - second.y > 2) ||
+        (first.x === second.x && first.y === second.y)
+    );
+    do {
+        third = new Vec2(randomNum(size.x), randomNum(size.y));
+    } while (
+        (third.x - third.y > 2) ||
+        (first.x === third.x && first.y === third.y) ||
+        (second.x === third.x && second.y === third.y)
+    );
+    return [first, second, third];
+}
+
 export class World {
     grid: Item[][][];
+    halfCoal: Vec2;
+    halfGold: Vec2;
+    halfSteel: Vec2;
     constructor(public size: Vec2) {
         this.grid = new Array(size.x).fill(0).map(() =>
             new Array(size.y).fill(0).map(() => {
@@ -14,9 +41,25 @@ export class World {
                 return zArray;
             })
         );
+
+        const halfGridSize = size.scale(0.5).floor();
+        const [coal, gold, steel] = generateRandomLocations(halfGridSize);
+        this.halfCoal = coal;
+        this.halfGold = gold;
+        this.halfSteel = steel;
     }
 
-    getResource(position: Vec3) {
+    getResource(pos: Vec3) {
+        const halfSize = pos.scale(0.5).floor();
+        if (
+            halfSize.x === this.halfSteel.x && halfSize.y === this.halfSteel.y
+        ) return 0;
+        if (halfSize.x === this.halfGold.x && halfSize.y === this.halfGold.y) {
+            return 1;
+        }
+        if (
+            halfSize.x === this.halfSteel.x && halfSize.y === this.halfSteel.y
+        ) return 2;
     }
 
     isInsideWorld(v: Vec3) {

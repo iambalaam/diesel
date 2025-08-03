@@ -39,5 +39,23 @@ export class WorldRenderer extends Behaviour {
                 );
             }
         }
+
+        console.log(this.world.halfCoal.scale(2));
+
+        renderer.renderSprite(
+            coal,
+            0,
+            this.world.halfCoal.scale(2),
+        );
+        renderer.renderSprite(
+            gold,
+            0,
+            this.world.halfGold.scale(2),
+        );
+        renderer.renderSprite(
+            steel,
+            0,
+            this.world.halfSteel.scale(2),
+        );
     }
 }

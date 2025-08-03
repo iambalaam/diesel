@@ -11,7 +11,7 @@ import { ALL_SHOPS } from "./Interactive.ts";
 export type Costs = [number, number, number];
 
 export class Shop extends Behaviour {
-    current: Costs = [0, 1, 0];
+    current: Costs = [0, 0, 0];
     constructor(
         private costs: Costs,
         private createItem: (world: Vec3) => void,

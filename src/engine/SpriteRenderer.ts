@@ -11,9 +11,12 @@ export interface RenderReq {
 export class SpriteRenderer {
     renderReqs: RenderReq[] = [];
 
-    renderSprite(sheet: Spritesheet, index: number, world: Vec3) {
-        const zIndex = 2 * world.z - world.x - world.y;
-        const screen = worldToScreen(world);
+    renderSprite(sheet: Spritesheet, index: number, world: Vec2 | Vec3) {
+        const world3 = world instanceof Vec3
+            ? world
+            : new Vec3(world.x, world.y, 0);
+        const zIndex = 2 * world3.z - world3.x - world3.y;
+        const screen = worldToScreen(world3);
         const spriteLoc = sheet.sprites[index];
         if (!spriteLoc) return;
 

@@ -74,7 +74,7 @@ export const conveyorItems = sheets["/static/materials.png"];
 export const selector = sheets["/static/debug-selector.png"];
 
 new Engine(ctx, {
-    onInit: (e, time) => {
+    onInit: (e, t) => {
         /**
          * Setup world
          */
@@ -89,6 +89,24 @@ new Engine(ctx, {
         );
         addInteraction(ctx.canvas, world); // Event listeners
 
+        const conveyorShop = e.createActor("Conveyor shop");
+        conveyorShop.addBehaviour(new Shop([2, 1, 0], () => {}));
+        conveyorShop.position.translation = new Vec3(6, 5, 0);
+        conveyorShop.animator = new Animator(e, t, shopAnimStates);
+        conveyorShop.renderer = new SpriteRenderer();
+
+        const splitterShop = e.createActor("Splitter shop");
+        splitterShop.addBehaviour(new Shop([2, 1, 0], () => {}));
+        splitterShop.position.translation = new Vec3(6, 3, 0);
+        splitterShop.animator = new Animator(e, t, shopAnimStates);
+        splitterShop.renderer = new SpriteRenderer();
+
+        const drillShop = e.createActor("Drill shop");
+        drillShop.addBehaviour(new Shop([2, 1, 0], () => {}));
+        drillShop.position.translation = new Vec3(6, 1, 0);
+        drillShop.animator = new Animator(e, t, shopAnimStates);
+        drillShop.renderer = new SpriteRenderer();
+
         const createPile = (pos: Vec3, item: ConveyorItem) => {
             const pile = e.createActor(`pile`);
             pile.position.translation = pos;
@@ -98,55 +116,16 @@ new Engine(ctx, {
             return pile;
         };
 
-        /**
-         * Setup conveyors
-         */
-        [
-            { pos: new Vec3(4, 3, 0), dir: new Vec3(1, 0, 0), type: Pile },
-            { pos: new Vec3(0, 0, 0), dir: new Vec3(1, 0, 0), type: Drill },
-            { pos: new Vec3(4, 4, 0), dir: new Vec3(1, 0, 0), type: Drill },
-            { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
-            { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
-            { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
-            { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
-            { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Splitter },
-            { pos: new Vec3(0, 2, 0), dir: new Vec3(0, 1, 0), type: Splitter },
-        ].forEach(
-            ({ pos, dir, type: Type }, i) => {
-                const actor = e.createActor(
-                    `${Type.name}-${i}`,
-                );
-                if (Type === Conveyor || Type === Splitter || Type === Drill) {
-                    actor.animator = new Animator(
-                        e,
-                        time,
-                        Type === Conveyor
-                            ? conveyorAnimStates
-                            : Type === Splitter
-                            ? splitterAnimStates
-                            : drillAnimStates,
-                    );
-                }
-                actor.renderer = new SpriteRenderer();
-                actor.position.translation = pos;
-                actor.position.forwards = dir;
+        const drill = e.createActor("drill");
+        drill.addBehaviour(new Drill(createPile));
+        drill.addBehaviour(new Interactive());
+        drill.position.translation = new Vec3(0, 0, 0);
+        drill.position.forwards = new Vec3(0, -1, 0);
+        drill.renderer = new SpriteRenderer();
+        drill.animator = new Animator(e, t, drillAnimStates);
 
-                if (Type === Pile) {
-                    actor.addBehaviour(new Pile(0));
-                    actor.getBehaviour(Container)!.requestSpace(time)?.(0);
-                } else {
-                    actor.addBehaviour(new Type(createPile as any));
-                }
-                actor.addBehaviour(new Interactive());
-            },
-        );
-
-        // Add shop!
-        const shop = e.createActor("shop");
-        shop.addBehaviour(new Shop([2, 1, 0], (world: Vec3) => {}));
-        shop.animator = new Animator(e, time, shopAnimStates);
-        shop.renderer = new SpriteRenderer();
-        shop.position.translation = new Vec3(1, 1, 0);
+        // Create coal
+        createPile(new Vec3(2, 4, 0), 0);
     },
 
     onEarlyRender: (e) => {
