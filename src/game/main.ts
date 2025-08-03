@@ -22,6 +22,7 @@ import { Behaviour } from "../engine/Behaviour.ts";
 import { Splitter } from "./Splitter.ts";
 import { ALL_CONTAINERS, Container } from "./Container.ts";
 import { worldToScreen } from "../engine/Transform.ts";
+import { FinalShop, finalShopAnimStates } from "./FinalShop.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -101,7 +102,7 @@ new Engine(ctx, {
         const createPile = (pos: Vec3, item: ConveyorItem) => {
             const pile = e.createActor(`pile`);
             pile.position.translation = pos;
-            pile.addBehaviour(new Pile(item)).container!.items = [item];
+            pile.addBehaviour(new Pile()).container!.items = [item];
             pile.addBehaviour(new Interactive());
             pile.renderer = new SpriteRenderer();
             return pile;
@@ -125,7 +126,7 @@ new Engine(ctx, {
                 createItem(() => new Conveyor(createPile), conveyorAnimStates),
             ),
         );
-        conveyorShop.position.translation = new Vec3(6, 5, 0);
+        conveyorShop.position.translation = new Vec3(5, 6, 0);
         conveyorShop.animator = new Animator(e, t, conveyorShopAnimStates);
         conveyorShop.renderer = new SpriteRenderer();
 
@@ -136,7 +137,7 @@ new Engine(ctx, {
                 createItem(() => new Splitter(createPile), splitterAnimStates),
             ),
         );
-        splitterShop.position.translation = new Vec3(6, 3, 0);
+        splitterShop.position.translation = new Vec3(5, 4, 0);
         splitterShop.animator = new Animator(e, t, splitterShopAnimStates);
         splitterShop.renderer = new SpriteRenderer();
 
@@ -147,7 +148,7 @@ new Engine(ctx, {
                 createItem(() => new Drill(world, createPile), drillAnimStates),
             ),
         );
-        drillShop.position.translation = new Vec3(6, 1, 0);
+        drillShop.position.translation = new Vec3(5, 2, 0);
         drillShop.animator = new Animator(e, t, drillShopAnimStates);
         drillShop.renderer = new SpriteRenderer();
 
@@ -158,6 +159,13 @@ new Engine(ctx, {
         drill.position.forwards = new Vec3(0, -1, 0);
         drill.renderer = new SpriteRenderer();
         drill.animator = new Animator(e, t, drillAnimStates);
+
+        const finalShop = e.createActor("final shop");
+        finalShop.addBehaviour(new FinalShop());
+        finalShop.position.translation = new Vec3(5, 0, 0);
+        finalShop.position.forwards = new Vec3(0, -1, 0);
+        finalShop.renderer = new SpriteRenderer();
+        finalShop.animator = new Animator(e, t, finalShopAnimStates);
 
         // Create coal
         createPile(new Vec3(2, 4, 0), 0);
