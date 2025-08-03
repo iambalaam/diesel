@@ -117,12 +117,15 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
                 return;
             }
             const grabbedPile = Interactive.current.actor.getBehaviour(Pile);
-            if (grabbedPile) {
-                const container = actor.getBehaviour(Container);
-                if (container && !container.isFull) {
-                    container.requestSpace({ time: 0, deltaTime: 0 })?.(
-                        grabbedPile.getItems()[0],
-                    );
+            if (grabbedPile && grabbedPile.container) {
+                const groundContainer = actor.getBehaviour(Container);
+                if (groundContainer && !groundContainer.isFull) {
+                    grabbedPile.container.items.forEach((item) => {
+                        groundContainer.requestSpace({
+                            time: 0,
+                            deltaTime: 0,
+                        })?.(item);
+                    });
                     Interactive.current.actor.destroy();
                     Interactive.current = undefined;
                     return;

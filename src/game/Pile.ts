@@ -9,43 +9,37 @@ import { conveyorItems } from "./main.ts";
 const ITEM_HEIGHT = 0.1;
 const MAX_ITEMS = 5;
 
-export class Pile extends Behaviour {
-    private items: ConveyorItem[];
+const itemPositions: Vec3[] = [
+    new Vec3(-0.25, 0.25, 0),
+    new Vec3(0.25, 0.25, 0),
+    new Vec3(0.25, -0.25, 0),
+    new Vec3(-0.25, -0.25, 0),
+    new Vec3(0, 0, 0.25),
+];
 
+export class Pile extends Behaviour {
+    container?: Container;
     constructor(item: ConveyorItem) {
         super();
-        this.items = [item];
     }
 
     override init(actor: Actor): void {
-        actor.addBehaviour(new Container(5)).onItem = (item) => {
-            this.items.push(item);
-        };
-    }
-
-    getItems = () => [...this.items];
-
-    addItem(item: ConveyorItem): boolean {
-        if (this.items.length < MAX_ITEMS) {
-            this.items.push(item);
-            return true;
-        } else {
-            return false;
-        }
+        this.container = actor.addBehaviour(new Container(5));
     }
 
     override render(actor: Actor, _time: Time): void {
         const { renderer, position } = actor;
         if (!renderer) return;
 
-        this.items.forEach((item, index) => {
-            renderer.renderSprite(
-                conveyorItems,
-                item,
-                position.translation.add(
-                    new Vec3(0, 0, 1).scale(index * ITEM_HEIGHT),
-                ),
-            );
+        this.container?.items.forEach((item, index) => {
+            const pos = itemPositions[index];
+            if (pos) {
+                renderer.renderSprite(
+                    conveyorItems,
+                    item,
+                    position.translation.add(pos),
+                );
+            }
         });
     }
 }

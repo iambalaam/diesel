@@ -4,7 +4,7 @@ import { Time } from "../engine/Engine.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { ConveyorItem } from "./Conveyor.ts";
 
-const MAX_REQUEST_TIME = 3_000;
+const MAX_REQUEST_TIME = 5_000;
 const ALL_CONTAINERS: Actor[] = [];
 
 export function getContainerAt(pos: Vec2) {
@@ -42,6 +42,7 @@ export class Container extends Behaviour {
         this.requests.push(time);
         return (item: ConveyorItem) => {
             this.items.push(item);
+            this.requests = this.requests.filter((t) => t !== time);
             this.onItem(item);
         };
     }

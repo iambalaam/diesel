@@ -22,8 +22,10 @@ export class Drill extends Behaviour {
     }
 
     override init(actor: Actor): void {
-        actor.addBehaviour(new Container(Infinity)).onItem = (_item) => {
-            this.fuel = OUTPUT_MULTIPLIER;
+        actor.addBehaviour(new Container(Infinity)).onItem = (item) => {
+            if (item === 0) {
+                this.fuel = OUTPUT_MULTIPLIER;
+            }
         };
     }
 
@@ -54,6 +56,7 @@ export class Drill extends Behaviour {
                 this.promoteItem!(this.item);
                 this.fuel--;
                 this.progress = 0;
+                return;
             }
         }
 
@@ -62,6 +65,7 @@ export class Drill extends Behaviour {
             this.createPile(target, this.item);
             this.progress = 0;
             this.fuel--;
+            return;
         }
 
         if (targetContainer) {

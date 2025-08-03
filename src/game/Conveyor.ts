@@ -8,7 +8,7 @@ import { conveyorItems, getCardinal } from "./main.ts";
 
 export const CONVEYOR_SPEED = 0.0145 / SPRITE_MS;
 
-export type ConveyorItem = 0 | 1;
+export type ConveyorItem = 0 | 1 | 2;
 
 export class Conveyor extends Behaviour {
     protected currentProgress = 0;

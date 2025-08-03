@@ -13,6 +13,7 @@ import { Pile } from "./Pile.ts";
 import { addInteraction, Interactive } from "./Interactive.ts";
 import { Splitter } from "./Splitter.ts";
 import { Drill } from "./Drill.ts";
+import { Container } from "./Container.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -40,8 +41,8 @@ const {
     drill: drillAnimStates,
 } = await loadAllAnimations();
 const assetFilenames = [
+    "materials.png",
     "debug-roof.png",
-    "debug-ball.png",
     "debug-selector.png",
 ].map((name) => `/static/${name}`);
 
@@ -62,7 +63,7 @@ sheetPromises.forEach(([filename, spritesheet]) => {
     sheets[filename] = spritesheet;
 });
 
-export const conveyorItems = sheets["/static/debug-ball.png"];
+export const conveyorItems = sheets["/static/materials.png"];
 export const selector = sheets["/static/debug-selector.png"];
 
 new Engine(ctx, {
@@ -84,7 +85,7 @@ new Engine(ctx, {
         const createPile = (pos: Vec3, item: ConveyorItem) => {
             const pile = e.createActor(`pile`);
             pile.position.translation = pos;
-            pile.addBehaviour(new Pile(item));
+            pile.addBehaviour(new Pile(item)).container!.items = [item];
             pile.addBehaviour(new Interactive());
             pile.renderer = new SpriteRenderer();
             return pile;
@@ -96,13 +97,13 @@ new Engine(ctx, {
         [
             { pos: new Vec3(4, 3, 0), dir: new Vec3(1, 0, 0), type: Pile },
             { pos: new Vec3(0, 0, 0), dir: new Vec3(1, 0, 0), type: Drill },
-            { pos: new Vec3(4, 4, 0), dir: new Vec3(1, 0, 0), type: Drill },
-            { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
-            { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
-            { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
-            { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
-            { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Splitter },
-            { pos: new Vec3(0, 2, 0), dir: new Vec3(0, 1, 0), type: Splitter },
+            // { pos: new Vec3(4, 4, 0), dir: new Vec3(1, 0, 0), type: Drill },
+            // { pos: new Vec3(1, 0, 0), dir: new Vec3(1, 0, 0), type: Conveyor },
+            // { pos: new Vec3(2, 0, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
+            // { pos: new Vec3(2, 1, 0), dir: new Vec3(0, 1, 0), type: Conveyor },
+            // { pos: new Vec3(2, 2, 0), dir: new Vec3(-1, 0, 0), type: Conveyor },
+            // { pos: new Vec3(1, 2, 0), dir: new Vec3(-1, 0, 0), type: Splitter },
+            // { pos: new Vec3(0, 2, 0), dir: new Vec3(0, 1, 0), type: Splitter },
         ].forEach(
             ({ pos, dir, type: Type }, i) => {
                 const actor = e.createActor(
@@ -125,6 +126,7 @@ new Engine(ctx, {
 
                 if (Type === Pile) {
                     actor.addBehaviour(new Pile(0));
+                    actor.getBehaviour(Container)!.requestSpace(time)?.(0);
                 } else {
                     actor.addBehaviour(new Type(createPile as any));
                 }
