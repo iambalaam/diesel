@@ -11,10 +11,10 @@ import { loadAllAnimations, loadSpritesheet } from "./assets.ts";
 import { Conveyor, ConveyorItem } from "./Conveyor.ts";
 import { Pile } from "./Pile.ts";
 import { addInteraction, Interactive } from "./Interactive.ts";
-import { Splitter } from "./Splitter.ts";
 import { Drill } from "./Drill.ts";
-import { Container } from "./Container.ts";
 import { Shop, shopAnimStates } from "./Shop.ts";
+import { Behaviour } from "../engine/Behaviour.ts";
+import { Splitter } from "./Splitter.ts";
 
 export const CANVAS_WIDTH = 1280;
 export const CANVAS_HEIGHT = 720;
@@ -89,24 +89,6 @@ new Engine(ctx, {
         );
         addInteraction(ctx.canvas, world); // Event listeners
 
-        const conveyorShop = e.createActor("Conveyor shop");
-        conveyorShop.addBehaviour(new Shop([2, 1, 0], () => {}));
-        conveyorShop.position.translation = new Vec3(6, 5, 0);
-        conveyorShop.animator = new Animator(e, t, shopAnimStates);
-        conveyorShop.renderer = new SpriteRenderer();
-
-        const splitterShop = e.createActor("Splitter shop");
-        splitterShop.addBehaviour(new Shop([2, 1, 0], () => {}));
-        splitterShop.position.translation = new Vec3(6, 3, 0);
-        splitterShop.animator = new Animator(e, t, shopAnimStates);
-        splitterShop.renderer = new SpriteRenderer();
-
-        const drillShop = e.createActor("Drill shop");
-        drillShop.addBehaviour(new Shop([2, 1, 0], () => {}));
-        drillShop.position.translation = new Vec3(6, 1, 0);
-        drillShop.animator = new Animator(e, t, shopAnimStates);
-        drillShop.renderer = new SpriteRenderer();
-
         const createPile = (pos: Vec3, item: ConveyorItem) => {
             const pile = e.createActor(`pile`);
             pile.position.translation = pos;
@@ -116,8 +98,52 @@ new Engine(ctx, {
             return pile;
         };
 
+        const createItem =
+            (factory: () => Behaviour, animStates: AnimationStates) =>
+            (pos: Vec3) => {
+                const actor = e.createActor("");
+                actor.position.translation = pos;
+                actor.position.forwards = new Vec3(-1, 0, 0);
+                actor.addBehaviour(factory());
+                actor.animator = new Animator(e, t, animStates);
+                actor.renderer = new SpriteRenderer();
+            };
+
+        const conveyorShop = e.createActor("Conveyor shop");
+        conveyorShop.addBehaviour(
+            new Shop(
+                [2, 1, 0],
+                createItem(() => new Conveyor(createPile), conveyorAnimStates),
+            ),
+        );
+        conveyorShop.position.translation = new Vec3(6, 5, 0);
+        conveyorShop.animator = new Animator(e, t, shopAnimStates);
+        conveyorShop.renderer = new SpriteRenderer();
+
+        const splitterShop = e.createActor("Splitter shop");
+        splitterShop.addBehaviour(
+            new Shop(
+                [2, 1, 1],
+                createItem(() => new Splitter(createPile), splitterAnimStates),
+            ),
+        );
+        splitterShop.position.translation = new Vec3(6, 3, 0);
+        splitterShop.animator = new Animator(e, t, shopAnimStates);
+        splitterShop.renderer = new SpriteRenderer();
+
+        const drillShop = e.createActor("Drill shop");
+        drillShop.addBehaviour(
+            new Shop(
+                [0, 2, 3],
+                createItem(() => new Drill(world, createPile), drillAnimStates),
+            ),
+        );
+        drillShop.position.translation = new Vec3(6, 1, 0);
+        drillShop.animator = new Animator(e, t, shopAnimStates);
+        drillShop.renderer = new SpriteRenderer();
+
         const drill = e.createActor("drill");
-        drill.addBehaviour(new Drill(createPile));
+        drill.addBehaviour(new Drill(world, createPile));
         drill.addBehaviour(new Interactive());
         drill.position.translation = new Vec3(0, 0, 0);
         drill.position.forwards = new Vec3(0, -1, 0);

@@ -21,7 +21,6 @@ export class Shop extends Behaviour {
 
     override init(actor: Actor) {
         ALL_SHOPS.push(actor);
-        const totalCost = this.costs[0] + this.costs[1] + this.costs[2];
         actor.addBehaviour(new Container(Infinity)).onItem = (item) => {
             if (this.current[item] < this.costs[item]) {
                 this.current[item]++;
@@ -31,14 +30,19 @@ export class Shop extends Behaviour {
                 this.current.every((cost, index) => cost >= this.costs[index])
             ) {
                 this.current = [0, 0, 0];
-                // SPAWN THING
+                this.createItem(
+                    actor.position.translation.add(new Vec3(0, 0, 1)),
+                );
             }
         };
     }
 
     override render(actor: Actor, _time: Time): void {
         if (!actor.animator) return;
-        actor.animator.joinCycle(this.current.join(","));
+        const cycleName = this.current.join(",");
+        if (cycleName in shopAnimStates.cycles) {
+            actor.animator.joinCycle(cycleName);
+        }
     }
 }
 

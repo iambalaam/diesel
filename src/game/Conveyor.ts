@@ -4,6 +4,7 @@ import { Behaviour } from "../engine/Behaviour.ts";
 import { Time } from "../engine/Engine.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Container, getContainerAt } from "./Container.ts";
+import { Interactive } from "./Interactive.ts";
 import { conveyorItems, getCardinal } from "./main.ts";
 
 export const CONVEYOR_SPEED = 0.0145 / SPRITE_MS;
@@ -23,6 +24,7 @@ export class Conveyor extends Behaviour {
     }
 
     override init(actor: Actor): void {
+        actor.addBehaviour(new Interactive());
         actor.addBehaviour(new Container(1)).onItem = (item) => {
             this.currentItem = item;
             this.currentProgress = 0;

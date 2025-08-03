@@ -40,8 +40,6 @@ export class WorldRenderer extends Behaviour {
             }
         }
 
-        console.log(this.world.halfCoal.scale(2));
-
         renderer.renderSprite(
             coal,
             0,

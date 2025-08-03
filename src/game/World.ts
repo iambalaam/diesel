@@ -1,6 +1,7 @@
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { Actor } from "../engine/Actor.ts";
+import { ConveyorItem } from "./Conveyor.ts";
 
 export type Item = Actor | { spriteIndex: number };
 
@@ -49,10 +50,11 @@ export class World {
         this.halfSteel = steel;
     }
 
-    getResource(pos: Vec3) {
+    getResource(pos: Vec3): ConveyorItem | undefined {
+        console.log("HERE");
         const halfSize = pos.scale(0.5).floor();
         if (
-            halfSize.x === this.halfSteel.x && halfSize.y === this.halfSteel.y
+            halfSize.x === this.halfCoal.x && halfSize.y === this.halfCoal.y
         ) return 0;
         if (halfSize.x === this.halfGold.x && halfSize.y === this.halfGold.y) {
             return 1;
