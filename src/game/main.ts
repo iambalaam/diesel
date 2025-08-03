@@ -12,7 +12,12 @@ import { Conveyor, ConveyorItem } from "./Conveyor.ts";
 import { Pile } from "./Pile.ts";
 import { addInteraction, Interactive } from "./Interactive.ts";
 import { Drill } from "./Drill.ts";
-import { Shop, shopAnimStates } from "./Shop.ts";
+import {
+    conveyorShopAnimStates,
+    drillShopAnimStates,
+    Shop,
+    splitterShopAnimStates,
+} from "./Shop.ts";
 import { Behaviour } from "../engine/Behaviour.ts";
 import { Splitter } from "./Splitter.ts";
 import { ALL_CONTAINERS, Container } from "./Container.ts";
@@ -121,7 +126,7 @@ new Engine(ctx, {
             ),
         );
         conveyorShop.position.translation = new Vec3(6, 5, 0);
-        conveyorShop.animator = new Animator(e, t, shopAnimStates);
+        conveyorShop.animator = new Animator(e, t, conveyorShopAnimStates);
         conveyorShop.renderer = new SpriteRenderer();
 
         const splitterShop = e.createActor("Splitter shop");
@@ -132,7 +137,7 @@ new Engine(ctx, {
             ),
         );
         splitterShop.position.translation = new Vec3(6, 3, 0);
-        splitterShop.animator = new Animator(e, t, shopAnimStates);
+        splitterShop.animator = new Animator(e, t, splitterShopAnimStates);
         splitterShop.renderer = new SpriteRenderer();
 
         const drillShop = e.createActor("Drill shop");
@@ -143,7 +148,7 @@ new Engine(ctx, {
             ),
         );
         drillShop.position.translation = new Vec3(6, 1, 0);
-        drillShop.animator = new Animator(e, t, shopAnimStates);
+        drillShop.animator = new Animator(e, t, drillShopAnimStates);
         drillShop.renderer = new SpriteRenderer();
 
         const drill = e.createActor("drill");

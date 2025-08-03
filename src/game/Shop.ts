@@ -61,53 +61,193 @@ export class Shop extends Behaviour {
             return;
         }
         const cycleName = this.current.join(",");
-        if (cycleName in shopAnimStates.cycles) {
+        if (cycleName in conveyorShopAnimStates.cycles) {
             actor.animator.joinCycle(cycleName);
         }
     }
 }
 
-const shopSprites = await loadSpritesheet(
+const conveyorShopSprites = await loadSpritesheet(
     "/static/Shop_Con.png",
     new Vec2(192, 192),
     new Vec2(192 / 2, 192),
 );
+const splitterShopSprites = await loadSpritesheet(
+    "/static/Shop_Spl.png",
+    new Vec2(192, 192),
+    new Vec2(192 / 2, 192),
+);
+const drillShopSprites = await loadSpritesheet(
+    "/static/Shop_Dri.png",
+    new Vec2(192, 192),
+    new Vec2(192 / 2, 192),
+);
 
-export const shopAnimStates: AnimationStates = {
+export const conveyorShopAnimStates: AnimationStates = {
     cycles: {
         idle: {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [0],
             looping: true,
         },
         "0,0,0": {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [0],
             looping: true,
         },
         "1,0,0": {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [1],
             looping: true,
         },
         "2,0,0": {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [2],
             looping: true,
         },
         "0,1,0": {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [3],
             looping: true,
         },
         "1,1,0": {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [4],
             looping: true,
         },
         "2,1,0": {
-            spriteSheet: shopSprites,
+            spriteSheet: conveyorShopSprites,
             indexes: [5],
+            looping: true,
+        },
+    },
+};
+
+export const splitterShopAnimStates: AnimationStates = {
+    cycles: {
+        idle: {
+            spriteSheet: splitterShopSprites,
+            indexes: [0],
+            looping: true,
+        },
+        "0,0,0": {
+            spriteSheet: splitterShopSprites,
+            indexes: [0],
+            looping: true,
+        },
+        "1,0,0": {
+            spriteSheet: splitterShopSprites,
+            indexes: [4],
+            looping: true,
+        },
+        "2,0,0": {
+            spriteSheet: splitterShopSprites,
+            indexes: [8],
+            looping: true,
+        },
+        "0,1,0": {
+            spriteSheet: splitterShopSprites,
+            indexes: [2],
+            looping: true,
+        },
+        "1,1,0": {
+            spriteSheet: splitterShopSprites,
+            indexes: [6],
+            looping: true,
+        },
+        "2,1,0": {
+            spriteSheet: splitterShopSprites,
+            indexes: [10],
+            looping: true,
+        },
+        "0,0,1": {
+            spriteSheet: splitterShopSprites,
+            indexes: [1],
+            looping: true,
+        },
+        "1,0,1": {
+            spriteSheet: splitterShopSprites,
+            indexes: [5],
+            looping: true,
+        },
+        "2,0,1": {
+            spriteSheet: splitterShopSprites,
+            indexes: [9],
+            looping: true,
+        },
+        "2,1,1": {
+            spriteSheet: splitterShopSprites,
+            indexes: [11],
+            looping: true,
+        },
+    },
+};
+
+export const drillShopAnimStates: AnimationStates = {
+    cycles: {
+        idle: {
+            spriteSheet: drillShopSprites,
+            indexes: [0],
+            looping: true,
+        },
+        "0,0,0": {
+            spriteSheet: drillShopSprites,
+            indexes: [0],
+            looping: true,
+        },
+        "0,1,0": {
+            spriteSheet: drillShopSprites,
+            indexes: [1],
+            looping: true,
+        },
+        "0,2,0": {
+            spriteSheet: drillShopSprites,
+            indexes: [2],
+            looping: true,
+        },
+        "0,0,1": {
+            spriteSheet: drillShopSprites,
+            indexes: [3],
+            looping: true,
+        },
+        "0,1,1": {
+            spriteSheet: drillShopSprites,
+            indexes: [4],
+            looping: true,
+        },
+        "0,2,1": {
+            spriteSheet: drillShopSprites,
+            indexes: [5],
+            looping: true,
+        },
+        "0,0,2": {
+            spriteSheet: drillShopSprites,
+            indexes: [6],
+            looping: true,
+        },
+        "0,1,2": {
+            spriteSheet: drillShopSprites,
+            indexes: [7],
+            looping: true,
+        },
+        "0,2,2": {
+            spriteSheet: drillShopSprites,
+            indexes: [8],
+            looping: true,
+        },
+        "0,0,3": {
+            spriteSheet: drillShopSprites,
+            indexes: [9],
+            looping: true,
+        },
+        "0,1,3": {
+            spriteSheet: drillShopSprites,
+            indexes: [10],
+            looping: true,
+        },
+        "0,2,3": {
+            spriteSheet: drillShopSprites,
+            indexes: [11],
             looping: true,
         },
     },
