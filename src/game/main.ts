@@ -53,15 +53,12 @@ const assetFilenames = [
     "materials.png",
     "debug-roof.png",
     "debug-selector.png",
+    "Coal_2D.png",
+    "Gold_2D.png",
+    "Steel_2D.png",
 ].map((name) => `/static/${name}`);
 
-const ground = await loadSpritesheet(
-    "/static/Ground.png",
-    new Vec2(384, 192),
-    new Vec2(384 / 2, 192),
-);
-
-const sheets: Record<string, Spritesheet> = {};
+export const sheets: Record<string, Spritesheet> = {};
 const sheetPromises = await Promise.all(
     assetFilenames.map(async (
         filename,
@@ -155,7 +152,8 @@ new Engine(ctx, {
         const drill = e.createActor("drill");
         drill.addBehaviour(new Drill(world, createPile));
         drill.addBehaviour(new Interactive());
-        drill.position.translation = new Vec3(0, 0, 0);
+        const { x, y } = world.halfCoal.scale(2);
+        drill.position.translation = new Vec3(x, y, 0);
         drill.position.forwards = new Vec3(0, -1, 0);
         drill.renderer = new SpriteRenderer();
         drill.animator = new Animator(e, t, drillAnimStates);
@@ -168,7 +166,7 @@ new Engine(ctx, {
         finalShop.animator = new Animator(e, t, finalShopAnimStates);
 
         // Create coal
-        createPile(new Vec3(2, 4, 0), 0);
+        createPile(getRandomEmptyLocation(new Vec2(5, 5)), 0);
     },
 
     onEarlyRender: (e) => {

@@ -5,17 +5,13 @@ import { Spritesheet } from "../engine/Spritesheet.ts";
 import { Vec2 } from "../engine/Vec2.ts";
 import { Vec3 } from "../engine/Vec3.ts";
 import { loadSpritesheet } from "./assets.ts";
+import { sheets } from "./main.ts";
 import { World } from "./World.ts";
 
-const [ground, coal, gold, steel] = await Promise.all(
-    ["Ground", "Coal_2D", "Gold_2D", "Steel_2D"]
-        .map(async (n) =>
-            await loadSpritesheet(
-                `/static/${n}.png`,
-                new Vec2(384, 192),
-                new Vec2(384 / 2, 192),
-            )
-        ),
+const ground = await loadSpritesheet(
+    `/static/Ground.png`,
+    new Vec2(384, 192),
+    new Vec2(384 / 2, 192),
 );
 
 export class WorldRenderer extends Behaviour {
@@ -40,20 +36,27 @@ export class WorldRenderer extends Behaviour {
             }
         }
 
-        renderer.renderSprite(
-            coal,
-            0,
-            this.world.halfCoal.scale(2),
-        );
-        renderer.renderSprite(
-            gold,
-            0,
-            this.world.halfGold.scale(2),
-        );
-        renderer.renderSprite(
-            steel,
-            0,
-            this.world.halfSteel.scale(2),
-        );
+        [
+            new Vec3(0, 0, 0),
+            new Vec3(0, 1, 0),
+            new Vec3(1, 0, 0),
+            new Vec3(1, 1, 0),
+        ].map((v) => {
+            renderer.renderSprite(
+                sheets["/static/Coal_2D.png"],
+                0,
+                this.world.halfCoal.scale(2).add(v),
+            );
+            renderer.renderSprite(
+                sheets["/static/Gold_2D.png"],
+                0,
+                this.world.halfGold.scale(2).add(v),
+            );
+            renderer.renderSprite(
+                sheets["/static/Steel_2D.png"],
+                0,
+                this.world.halfSteel.scale(2).add(v),
+            );
+        });
     }
 }

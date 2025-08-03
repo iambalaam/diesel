@@ -22,17 +22,17 @@ function generateRandomLocations(size: Vec2): [Vec2, Vec2, Vec2] {
     let third: Vec2;
     do {
         first = new Vec2(randomNum(size.x), randomNum(size.y));
-    } while (first.x - first.y > 2);
+    } while (first.x > 1);
     do {
         second = new Vec2(randomNum(size.x), randomNum(size.y));
     } while (
-        (second.x - second.y > 2) ||
+        (second.x > 1) ||
         (first.x === second.x && first.y === second.y)
     );
     do {
         third = new Vec2(randomNum(size.x), randomNum(size.y));
     } while (
-        (third.x - third.y > 2) ||
+        (third.x > 1) ||
         (first.x === third.x && first.y === third.y) ||
         (second.x === third.x && second.y === third.y)
     );
