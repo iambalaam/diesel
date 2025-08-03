@@ -41,8 +41,13 @@ export function addInteraction(canvas: HTMLCanvasElement, world: World) {
                 return pos.x === worldPos.x &&
                     pos.y === worldPos.y;
             });
+            const shop = ALL_SHOPS.find((s) => {
+                const pos = s.position.translation;
+                return pos.x === worldPos.x &&
+                    pos.y === worldPos.y;
+            });
             if (
-                Interactive.current?.dropping && newActors.length < 2
+                Interactive.current?.dropping && newActors.length < 2 && !shop
             ) {
                 Interactive.current = undefined;
                 canvas.style.cursor = "unset";

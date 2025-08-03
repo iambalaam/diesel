@@ -84,7 +84,7 @@ new Engine(ctx, {
         w.addBehaviour(
             new WorldRenderer(
                 world,
-                sheets["/static/debug-roof.png"],
+                sheets["/static/Coal_2D.png"],
             ),
         );
         addInteraction(ctx.canvas, world); // Event listeners
