@@ -1,11 +1,16 @@
 {
   "compilerOptions": {
     "lib": [
-      "deno.window","dom", "dom.iterable"
+      "deno.window",
+      "dom",
+      "dom.iterable"
     ]
   },
   "tasks": {
     "dev": "deno run --watch main.ts",
     "build": "deno run --watch build.ts"
+  },
+  "fmt": {
+    "indentWidth": 4
   }
 }
