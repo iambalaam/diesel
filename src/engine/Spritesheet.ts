@@ -1,9 +1,9 @@
 import { Vec2 } from "./Vec2.ts";
 
-export interface SpriteSheetConfig {
+export interface SpritesheetConfig {
     spriteSize: Vec2;
     spriteAnchor: Vec2;
-    rows: boolean;
+    direction: "rows" | "columns";
 }
 
 export type SpriteLocation = {
@@ -12,11 +12,11 @@ export type SpriteLocation = {
 };
 
 export class Spritesheet {
-    cfg: SpriteSheetConfig;
+    cfg: SpritesheetConfig;
     img: HTMLImageElement;
     sprites: SpriteLocation[] = [];
 
-    constructor(spriteSheet: HTMLImageElement, cfg: SpriteSheetConfig) {
+    constructor(spriteSheet: HTMLImageElement, cfg: SpritesheetConfig) {
         if (!spriteSheet.complete) {
             throw new Error(`Spritesheet ${spriteSheet.src} has not loaded`);
         }
@@ -26,7 +26,7 @@ export class Spritesheet {
         const spritesWide = Math.floor(spriteSheet.width / cfg.spriteSize.x);
         const spritesHigh = Math.floor(spriteSheet.height / cfg.spriteSize.y);
 
-        if (cfg.rows) {
+        if (cfg.direction === "rows") {
             for (let y = 0; y < spritesHigh; y++) {
                 for (let x = 0; x < spritesWide; x++) {
                     this.sprites.push({

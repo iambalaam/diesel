@@ -5,6 +5,7 @@ body {
     height: 100%;
     width: 100%;
     background-color: grey;
+    overscroll-behavior: none;
 }
 
 #root {
@@ -16,5 +17,5 @@ body {
 }
 
 canvas {
-    flex-grow: 1;
+    image-rendering: pixelated;
 }
